@@ -1,13 +1,13 @@
 %rename cpp_options old_cpp_options
 
 *cpp_options:
--nostdinc -isystem ./build/musl/include -isystem include%s %(old_cpp_options)
+-nostdinc -isystem %:getenv(MUSL /include) -isystem include%s %(old_cpp_options)
 
 *cc1:
-%(cc1_cpu) -nostdinc -isystem ./build/musl/include -isystem include%s
+%(cc1_cpu) -nostdinc -isystem %:getenv(MUSL /include) -isystem include%s
 
 *link_libgcc:
--L./build/musl/lib -L .%s
+-L%:getenv(MUSL /lib) -L .%s
 
 *libgcc:
 libgcc.a%s %:if-exists(libgcc_eh.a%s)
@@ -16,7 +16,7 @@ libgcc.a%s %:if-exists(libgcc_eh.a%s)
 -lc %s
 
 *startfile:
-%{!shared: ./build/musl/lib/Scrt1.o} ./build/musl/lib/crti.o%s
+%{!shared: %:getenv(MUSL /lib/Scrt1.o)} %:getenv(MUSL /lib/crti.o)%s
 
 *link:
 -dynamic-linker /lib/ld-musl-x86_64.so.1 -nostdlib %{shared:-shared} %{static:-static} %{rdynamic:-export-dynamic}

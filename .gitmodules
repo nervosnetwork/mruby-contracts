@@ -1,0 +1,9 @@
+[submodule "mruby"]
+	path = mruby
+	url = https://github.com/mruby/mruby
+[submodule "riscv-musl"]
+	path = riscv-musl
+	url = https://github.com/NervosFoundation/riscv-musl
+[submodule "flatcc"]
+	path = flatcc
+	url = https://github.com/dvidelabs/flatcc
