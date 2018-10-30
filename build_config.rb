@@ -18,14 +18,14 @@ end
 MRuby::Toolchain.new(:riscv_newlib) do |conf, _params|
   toolchain :riscv
 
-  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -O3)]
+  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -O2)]
   conf.linker.flags = [ENV['LDFLAGS'] || %w(-specs ../newlib-gcc.specs)]
 end
 
 MRuby::Toolchain.new(:riscv_newlib_noio) do |conf, _params|
   toolchain :riscv
 
-  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -O3)]
+  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -O2)]
   conf.linker.flags = [ENV['LDFLAGS'] || %w(-specs ../newlib-gcc.specs)]
 end
 
