@@ -1,11 +1,15 @@
 TARGET := riscv64-unknown-elf
 CC := $(TARGET)-gcc
 CFLAGS := -O2 -mcmodel=medlow -DCKB_NO_MMU -D__riscv_soft_float -D__riscv_float_abi_soft
+LDFLAGS := -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
 MUSL_LIB := build/musl/lib/libc.a
 MRUBY_LIB := mruby/build/riscv-gcc/lib/libmruby.a
 NEWLIB_LIB := build/newlib/$(TARGET)/lib/libc.a
 FLATCC := flatcc/bin/flatcc
 CURRENT_DIR := $(shell pwd)
+
+build/argv_entry: c/argv_entry.c $(MRUBY_LIB)
+	NEWLIB=build/newlib/$(TARGET) $(CC) -specs newlib-gcc.specs $(CFLAGS) $(LDFLAGS) -Imruby/include $^ -o $@
 
 $(MUSL_LIB): musl
 $(MRUBY_LIB): mruby
