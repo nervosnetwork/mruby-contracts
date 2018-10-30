@@ -7,3 +7,6 @@
 [submodule "flatcc"]
 	path = flatcc
 	url = https://github.com/dvidelabs/flatcc
+[submodule "riscv-newlib"]
+	path = riscv-newlib
+	url = https://github.com/NervosFoundation/riscv-newlib

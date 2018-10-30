@@ -15,15 +15,22 @@ MRuby::Toolchain.new(:riscv) do |conf, _params|
   conf.linker.command = ENV['LD'] || 'riscv64-unknown-elf-gcc'
 end
 
-MRuby::Toolchain.new(:riscv_musl_no_mmu) do |conf, _params|
+MRuby::Toolchain.new(:riscv_newlib) do |conf, _params|
   toolchain :riscv
 
-  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../musl-gcc.specs -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO)]
-  conf.linker.flags = [ENV['LDFLAGS'] || %w(-specs ../musl-gcc.specs)]
+  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -O3)]
+  conf.linker.flags = [ENV['LDFLAGS'] || %w(-specs ../newlib-gcc.specs)]
 end
 
-MRuby::Build.new('riscv-gcc-test') do |conf|
+MRuby::Toolchain.new(:riscv_newlib_noio) do |conf, _params|
   toolchain :riscv
+
+  conf.cc.flags = [ENV['CFLAGS'] || %w(-specs ../newlib-gcc.specs -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -O3)]
+  conf.linker.flags = [ENV['LDFLAGS'] || %w(-specs ../newlib-gcc.specs)]
+end
+
+MRuby::Build.new('riscv-gcc-spike') do |conf|
+  toolchain :riscv_newlib
 
   conf.enable_bintest
   conf.enable_test
@@ -114,7 +121,7 @@ MRuby::Build.new('riscv-gcc-test') do |conf|
 end
 
 MRuby::Build.new('riscv-gcc') do |conf|
-  toolchain :riscv_musl_no_mmu
+  toolchain :riscv_newlib_noio
 
   # Use standard Array#pack, String#unpack methods
   conf.gem :core => "mruby-pack"
