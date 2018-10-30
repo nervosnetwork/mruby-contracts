@@ -8,7 +8,12 @@ NEWLIB_LIB := build/newlib/$(TARGET)/lib/libc.a
 FLATCC := flatcc/bin/flatcc
 CURRENT_DIR := $(shell pwd)
 
+all: build/argv_entry build/argv_source_entry
+
 build/argv_entry: c/argv_entry.c $(MRUBY_LIB)
+	NEWLIB=build/newlib/$(TARGET) $(CC) -specs newlib-gcc.specs $(CFLAGS) $(LDFLAGS) -Imruby/include $^ -o $@
+
+build/argv_source_entry: c/argv_source_entry.c $(MRUBY_LIB)
 	NEWLIB=build/newlib/$(TARGET) $(CC) -specs newlib-gcc.specs $(CFLAGS) $(LDFLAGS) -Imruby/include $^ -o $@
 
 $(MUSL_LIB): musl

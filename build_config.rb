@@ -173,4 +173,7 @@ MRuby::Build.new('riscv-gcc') do |conf|
 
   # Use class/module extension
   conf.gem :core => "mruby-class-ext"
+
+  # Use mruby-compiler to build other mrbgems
+  conf.gem :core => "mruby-compiler"
 end
