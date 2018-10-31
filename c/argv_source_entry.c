@@ -4,6 +4,20 @@
 #include <mruby/compile.h>
 #include <mruby/irep.h>
 
+#ifdef SECP256K1_CUSTOM_FUNCS
+#include <machine/syscall.h>
+void custom_abort()
+{
+  syscall_errno(93, 10, 0, 0, 0, 0, 0);
+}
+
+int custom_print_err(const char * arg, ...)
+{
+  (void) arg;
+  return 0;
+}
+#endif
+
 int main(int argc, char* argv[])
 {
   if (argc < 1) {

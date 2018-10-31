@@ -1,6 +1,13 @@
 #include "mruby.h"
 #include "mruby/value.h"
 
+#ifdef SECP256K1_CUSTOM_FUNCS
+#define CUSTOM_ABORT 1
+#define CUSTOM_PRINT_ERR 1
+extern void custom_abort();
+extern int custom_print_err(const char * arg, ...);
+#endif
+
 #include <secp256k1_static.h>
 #include <secp256k1.c>
 

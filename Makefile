@@ -1,7 +1,7 @@
 TARGET := riscv64-unknown-elf
 CC := $(TARGET)-gcc
 LD := $(TARGET)-gcc
-CFLAGS := -O2 -mcmodel=medlow -DCKB_NO_MMU -D__riscv_soft_float -D__riscv_float_abi_soft
+CFLAGS := -O2 -mcmodel=medlow -DCKB_NO_MMU -DSECP256K1_CUSTOM_FUNCS -D__riscv_soft_float -D__riscv_float_abi_soft
 LDFLAGS := -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
 MUSL_LIB := build/musl/lib/libc.a
 MRUBY_LIB := mruby/build/riscv-gcc/lib/libmruby.a

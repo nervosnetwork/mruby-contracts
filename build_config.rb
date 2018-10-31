@@ -211,7 +211,7 @@ end
 MRuby::Build.new('riscv-gcc') do |conf|
   toolchain :riscv_newlib
 
-  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -DCKB_HAS_SYSCALLS"
+  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -DCKB_HAS_SYSCALLS -DSECP256K1_CUSTOM_FUNCS"
 
   # Use standard Array#pack, String#unpack methods
   conf.gem :core => "mruby-pack"
