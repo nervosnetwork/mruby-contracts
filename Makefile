@@ -1,10 +1,12 @@
 TARGET := riscv64-unknown-elf
 CC := $(TARGET)-gcc
+LD := $(TARGET)-gcc
 CFLAGS := -O2 -mcmodel=medlow -DCKB_NO_MMU -D__riscv_soft_float -D__riscv_float_abi_soft
 LDFLAGS := -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections -Wl,-s
 MUSL_LIB := build/musl/lib/libc.a
 MRUBY_LIB := mruby/build/riscv-gcc/lib/libmruby.a
 NEWLIB_LIB := build/newlib/$(TARGET)/lib/libc.a
+SECP256K1_LIB := secp256k1/.libs/libsecp256k1.a
 FLATCC := flatcc/bin/flatcc
 CURRENT_DIR := $(shell pwd)
 
@@ -19,6 +21,7 @@ build/argv_source_entry: c/argv_source_entry.c $(MRUBY_LIB)
 $(MUSL_LIB): musl
 $(MRUBY_LIB): mruby
 $(NEWLIB_LIB): newlib
+$(SECP256K1_LIB): secp256k1
 
 $(FLATCC):
 	cd flatcc && scripts/build.sh
@@ -42,6 +45,12 @@ mruby:
 	cd mruby && \
 		NEWLIB=../build/newlib/$(TARGET) MRUBY_CONFIG=../build_config.rb make
 
+secp256k1:
+	cd secp256k1 && \
+		./autogen.sh && \
+		CC=$(CC) LD=$(LD) ./configure --with-bignum=no --enable-ecmult-static-precomputation --enable-endomorphism --host=$(TARGET) && \
+		make libsecp256k1.la
+
 clean-newlib:
 	rm -rf build/newlib build/build-newlib
 
@@ -53,6 +62,9 @@ clean-mruby:
 	cd mruby && \
 		MUSL=../build/musl MRUBY_CONFIG=../build_config.rb make clean
 
-clean: clean-newlib clean-musl clean-mruby
+clean-secp256k1:
+	cd secp256k1 && make clean
 
-.PHONY: update_schema clean clean-newlib clean-musl clean-mruby newlib musl mruby
+clean: clean-newlib clean-musl clean-mruby clean-secp256k1
+
+.PHONY: update_schema clean clean-newlib clean-musl clean-mruby clean-secp256k1 newlib musl mruby secp256k1

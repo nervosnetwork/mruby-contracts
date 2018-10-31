@@ -10,3 +10,6 @@
 [submodule "riscv-newlib"]
 	path = riscv-newlib
 	url = https://github.com/NervosFoundation/riscv-newlib
+[submodule "secp256k1"]
+	path = secp256k1
+	url = https://github.com/NervosFoundation/secp256k1

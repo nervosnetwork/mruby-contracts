@@ -24,6 +24,14 @@ int main(int argc, char* argv[])
   mrb_value v = mrb_load_irep(mrb, argv[0]);
 
   if (mrb->exc) {
+#ifndef MRB_DISABLE_STDIO
+    if (mrb_undef_p(v)) {
+      mrb_p(mrb, mrb_obj_value(mrb->exc));
+    }
+    else {
+      mrb_print_error(mrb);
+    }
+#endif
     return -1;
   }
 
