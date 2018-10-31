@@ -110,6 +110,7 @@ MRuby::Build.new do |conf|
 
   conf.gem "mruby-ckb"
   conf.gem "mruby-secp256k1"
+  conf.gem "mruby-sha3"
 end
 
 MRuby::Build.new('riscv-gcc-spike') do |conf|
@@ -206,6 +207,7 @@ MRuby::Build.new('riscv-gcc-spike') do |conf|
 
   conf.gem "mruby-ckb"
   conf.gem "mruby-secp256k1"
+  conf.gem "mruby-sha3"
 end
 
 MRuby::Build.new('riscv-gcc') do |conf|
@@ -269,4 +271,5 @@ MRuby::Build.new('riscv-gcc') do |conf|
 
   conf.gem "mruby-ckb"
   conf.gem "mruby-secp256k1"
+  conf.gem "mruby-sha3"
 end
