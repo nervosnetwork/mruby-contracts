@@ -20,14 +20,14 @@ int custom_print_err(const char * arg, ...)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 1) {
+  if (argc < 2) {
     return -2;
   }
 
   mrb_state *mrb = mrb_open();
 
   mrb_value margv = mrb_ary_new_capa(mrb, argc);
-  for (int i = 1; i < argc; i++) {
+  for (int i = 2; i < argc; i++) {
     char* utf8 = mrb_utf8_from_locale(argv[i], -1);
     if (utf8) {
       mrb_ary_push(mrb, margv, mrb_str_new_cstr(mrb, utf8));
@@ -37,11 +37,11 @@ int main(int argc, char* argv[])
   mrb_define_global_const(mrb, "ARGV", margv);
 
   mrb_value v;
-  if (argv[0][0] == 'E' && argv[0][1] == 'T' &&
-      argv[0][2] == 'I' && argv[0][3] == 'R') {
-    v = mrb_load_irep(mrb, argv[0]);
+  if (argv[1][0] == 'E' && argv[1][1] == 'T' &&
+      argv[1][2] == 'I' && argv[1][3] == 'R') {
+    v = mrb_load_irep(mrb, argv[1]);
   } else {
-    v = mrb_load_string(mrb, argv[0]);
+    v = mrb_load_string(mrb, argv[1]);
   }
 
   if (mrb->exc) {
