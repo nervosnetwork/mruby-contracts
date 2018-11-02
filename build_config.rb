@@ -112,6 +112,7 @@ MRuby::Build.new do |conf|
   conf.gem "mruby-secp256k1"
   conf.gem "mruby-sha3"
 
+  conf.gem :core => "mruby-metaprog"
   conf.gem :github => "xxuejie/mruby-json"
 end
 
@@ -211,6 +212,7 @@ MRuby::Build.new('riscv-gcc-spike') do |conf|
   conf.gem "mruby-secp256k1"
   conf.gem "mruby-sha3"
 
+  conf.gem :core => "mruby-metaprog"
   conf.gem :github => "xxuejie/mruby-json"
 end
 
@@ -277,5 +279,6 @@ MRuby::Build.new('riscv-gcc') do |conf|
   conf.gem "mruby-secp256k1"
   conf.gem "mruby-sha3"
 
+  conf.gem :core => "mruby-metaprog"
   conf.gem :github => "xxuejie/mruby-json"
 end
