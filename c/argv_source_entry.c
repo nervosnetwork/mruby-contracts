@@ -3,6 +3,7 @@
 #include <mruby/array.h>
 #include <mruby/compile.h>
 #include <mruby/irep.h>
+#include <mruby/string.h>
 
 #ifdef SECP256K1_CUSTOM_FUNCS
 #include <machine/syscall.h>
@@ -52,6 +53,9 @@ int main(int argc, char* argv[])
     else {
       mrb_print_error(mrb);
     }
+#else
+    mrb_value str = mrb_inspect(mrb, mrb_obj_value(mrb->exc));
+    syscall_errno(2051, mrb_string_value_cstr(mrb, &str), 0, 0, 0, 0, 0);
 #endif
     return -1;
   }
