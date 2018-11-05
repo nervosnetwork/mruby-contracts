@@ -5,6 +5,7 @@
 
 #define SYS_ckb_mmap_tx 2049
 #define SYS_ckb_mmap_cell 2050
+#define SYS_ckb_debug 2051
 
 static inline long
 __internal_syscall(long n, long _a0, long _a1, long _a2, long _a3, long _a4, long _a5)
@@ -40,6 +41,12 @@ int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t
 {
   return syscall(SYS_ckb_mmap_cell, addr, len, mod, offset, 0, 0);
 }
+
+int ckb_debug(const char* s)
+{
+  return syscall(SYS_ckb_debug, s, 0, 0, 0, 0, 0);
+}
+
 
 #else
 
@@ -120,6 +127,11 @@ int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t
 
     return 0;
   }
+}
+
+int ckb_debug(const char* s)
+{
+  return puts(s);
 }
 
 #endif

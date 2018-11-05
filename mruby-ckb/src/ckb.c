@@ -13,6 +13,7 @@
 
 extern int ckb_mmap_tx(void* addr, uint64_t* len, unsigned mod, size_t offset);
 extern int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t index, size_t source);
+extern int ckb_debug(const char* s);
 
 static mrb_value
 bytes_to_string(ns(Bytes_table_t) bytes, mrb_state *mrb)
@@ -137,12 +138,26 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
   return mtx;
 }
 
+static mrb_value
+ckb_mrb_debug(mrb_state *mrb, mrb_value obj)
+{
+  mrb_value s;
+
+  mrb_get_args(mrb, "S", &s);
+
+  const char *cstr = mrb_string_value_cstr(mrb, &s);
+  ckb_debug(cstr);
+
+  return obj;
+}
+
 void
 mrb_mruby_ckb_gem_init(mrb_state* mrb)
 {
   struct RClass *mrb_ckb;
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
 }
 
 void
