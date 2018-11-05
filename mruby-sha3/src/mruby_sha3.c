@@ -20,6 +20,7 @@ mrb_sha3_init(mrb_state *mrb, mrb_value self)
   mrb_get_args(mrb, "|i", &mdlen);
 
   t = (sha3_ctx_t *) mrb_malloc(mrb, sizeof(sha3_ctx_t));
+  sha3_init(t, mdlen);
   mrb_data_init(self, t, &sha3_state_type);
 
   return self;
@@ -48,8 +49,17 @@ mrb_sha3_final(mrb_state *mrb, mrb_value self)
 
   s = mrb_str_new_capa(mrb, t->mdlen);
   sha3_final(RSTRING_PTR(s), t);
+  RSTR_SET_LEN(mrb_str_ptr(s), t->mdlen);
 
   return s;
+}
+
+static mrb_value
+mrb_sha3_mdlen(mrb_state *mrb, mrb_value self)
+{
+  sha3_ctx_t *t = DATA_GET_PTR(mrb, self, &sha3_state_type, sha3_ctx_t);
+
+  return mrb_fixnum_value(t->mdlen);
 }
 
 void
@@ -62,6 +72,7 @@ mrb_mruby_sha3_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sha3, "initialize", mrb_sha3_init, MRB_ARGS_OPT(1));
   mrb_define_method(mrb, sha3, "update", mrb_sha3_update, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sha3, "final", mrb_sha3_final, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sha3, "mdlen", mrb_sha3_mdlen, MRB_ARGS_NONE());
 }
 
 void
