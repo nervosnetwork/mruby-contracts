@@ -19,6 +19,40 @@ extern int custom_print_err(const char * arg, ...);
 
 #ifndef SECP256K1_DISABLE_SIGNING
 static mrb_value
+secp256k1_mrb_pubkey(mrb_state *mrb, mrb_value obj)
+{
+  char *secretkey_buf;
+  size_t secretkey_len;
+
+  mrb_get_args(mrb, "s", &secretkey_buf, &secretkey_len);
+
+  if (secretkey_len != 32) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secret key length is not 32 bytes!");
+  }
+
+  secp256k1_context context;
+  int ret = secp256k1_context_initialize(&context, SECP256K1_CONTEXT_SIGN);
+  if (ret == 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 initialization failure!");
+  }
+
+  secp256k1_pubkey pubkey;
+  ret = secp256k1_ec_pubkey_create(&context, &pubkey, secretkey_buf);
+  if (ret == 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 pubkey creation failure!");
+  }
+
+  unsigned char buf[256];
+  size_t len = 256;
+  ret = secp256k1_ec_pubkey_serialize(&context, buf, &len, &pubkey, SECP256K1_EC_COMPRESSED);
+  if (ret == 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 pubkey serializing failure!");
+  }
+
+  return mrb_str_new(mrb, buf, len);
+}
+
+static mrb_value
 secp256k1_mrb_sign(mrb_state *mrb, mrb_value obj)
 {
   char *secretkey_buf, *message_buf;
@@ -108,6 +142,7 @@ void mrb_mruby_secp256k1_gem_init(mrb_state* mrb)
   struct RClass *mrb_secp256k1;
   mrb_secp256k1 = mrb_define_module(mrb, "Secp256k1");
 #ifndef SECP256K1_DISABLE_SIGNING
+  mrb_define_module_function(mrb, mrb_secp256k1, "pubkey", secp256k1_mrb_pubkey, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_secp256k1, "sign", secp256k1_mrb_sign, MRB_ARGS_REQ(2));
 #endif
 
