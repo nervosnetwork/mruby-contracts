@@ -2,6 +2,7 @@
 #include "mruby/array.h"
 #include "mruby/hash.h"
 #include "mruby/string.h"
+#include "mruby/variable.h"
 
 #include "protocol_reader.h"
 
@@ -29,6 +30,7 @@ bytes_to_string(ns(Bytes_table_t) bytes, mrb_state *mrb)
   for (int i = 0; i < len; i++) {
     RSTRING_PTR(s)[i] = flatbuffers_uint8_vec_at(seq, i);
   }
+  RSTR_SET_LEN(mrb_str_ptr(s), len);
   return s;
 }
 
@@ -151,13 +153,80 @@ ckb_mrb_debug(mrb_state *mrb, mrb_value obj)
   return obj;
 }
 
+static mrb_value
+ckb_mrb_cell_length(mrb_state *mrb, mrb_value self)
+{
+  mrb_int source, index;
+  uint64_t len;
+
+  source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
+  index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
+
+  len = 0;
+  if (ckb_mmap_cell(NULL, &len, 0, 0, index, source) != 1) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  }
+
+  return mrb_fixnum_value(len);
+}
+
+static mrb_value
+ckb_mrb_cell_read(mrb_state *mrb, mrb_value self)
+{
+  mrb_int source, index, offset, length;
+  mrb_value buf;
+  uint64_t len;
+
+  mrb_get_args(mrb, "ii", &offset, &length);
+
+  source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
+  index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
+
+  buf = mrb_str_new_capa(mrb, length);
+  len = length;
+  if (ckb_mmap_cell(RSTRING_PTR(buf), &len, 1, offset, index, source) != 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  }
+  RSTR_SET_LEN(mrb_str_ptr(buf), len);
+
+  return buf;
+}
+
+static mrb_value
+ckb_mrb_cell_readall(mrb_state *mrb, mrb_value self)
+{
+  mrb_int source, index;
+  mrb_value buf;
+  uint64_t len;
+
+  source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
+  index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
+
+  len = 0;
+  if (ckb_mmap_cell(NULL, &len, 0, 0, index, source) != 1) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  }
+
+  buf = mrb_str_new_capa(mrb, len);
+  if (ckb_mmap_cell(RSTRING_PTR(buf), &len, 0, 0, index, source) != 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  }
+  RSTR_SET_LEN(mrb_str_ptr(buf), len);
+
+  return buf;
+}
+
 void
 mrb_mruby_ckb_gem_init(mrb_state* mrb)
 {
-  struct RClass *mrb_ckb;
+  struct RClass *mrb_ckb, *cell;
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
+  cell = mrb_define_class(mrb, "Cell", mrb_ckb);
+  mrb_define_method(mrb, cell, "length", ckb_mrb_cell_length, MRB_ARGS_NONE());
+  mrb_define_method(mrb, cell, "read", ckb_mrb_cell_read, MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, cell, "readall", ckb_mrb_cell_readall, MRB_ARGS_NONE());
 }
 
 void
