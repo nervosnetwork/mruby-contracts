@@ -5,7 +5,8 @@
 
 #define SYS_ckb_mmap_tx 2049
 #define SYS_ckb_mmap_cell 2050
-#define SYS_ckb_debug 2051
+#define SYS_ckb_fetch_script_hash 2051
+#define SYS_ckb_debug 2177
 
 static inline long
 __internal_syscall(long n, long _a0, long _a1, long _a2, long _a3, long _a4, long _a5)
@@ -40,6 +41,11 @@ int ckb_mmap_tx(void* addr, uint64_t* len, unsigned mod, size_t offset)
 int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t index, size_t source)
 {
   return syscall(SYS_ckb_mmap_cell, addr, len, mod, offset, 0, 0);
+}
+
+int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
+{
+  return syscall(SYS_ckb_fetch_script_hash, addr, len, index, source, category, 0);
 }
 
 int ckb_debug(const char* s)
@@ -125,6 +131,30 @@ int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t
     fread(addr, 1, read_size, fp);
     *len = left_size;
 
+    return 0;
+  }
+}
+
+ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
+{
+  char internal_buffer[MAX_FILENAME_LENGTH];
+  snprintf(internal_buffer, MAX_FILENAME_LENGTH, "data/script_hashes/%ld/%ld/%ld", index, source, category);
+
+  FILE *fp = fopen(internal_buffer, "rb");
+  if (fp == NULL) {
+    return 2;
+  }
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  if (*len < size) {
+    *len = size;
+    fclose(fp);
+    return 1;
+  } else {
+    *len = fread(addr, 1, size, fp);
+    fclose(fp);
     return 0;
   }
 }

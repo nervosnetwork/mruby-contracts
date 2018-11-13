@@ -11,9 +11,11 @@
 
 #define SUCCESS 0
 #define OVERRIDE_LEN 1
+#define ITEM_MISSING 2
 
 extern int ckb_mmap_tx(void* addr, uint64_t* len, unsigned mod, size_t offset);
 extern int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t index, size_t source);
+extern int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category);
 extern int ckb_debug(const char* s);
 
 static mrb_value
@@ -141,6 +143,28 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
 }
 
 static mrb_value
+ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
+{
+  mrb_int index, source, category;
+  uint64_t len;
+  mrb_value s;
+  int ret;
+
+  mrb_get_args(mrb, "ii", &index, &source, &category);
+
+  len = 32;
+  s = mrb_str_new_capa(mrb, len);
+  ret = ckb_mmap_fetch_script_hash(RSTRING_PTR(s), &len, index, source, category);
+  if (ret == OVERRIDE_LEN) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "buffer length is not enough!");
+  } else if (ret == ITEM_MISSING) {
+    return mrb_nil_value();
+  }
+  RSTR_SET_LEN(mrb_str_ptr(s), len);
+  return s;
+}
+
+static mrb_value
 ckb_mrb_debug(mrb_state *mrb, mrb_value obj)
 {
   mrb_value s;
@@ -222,6 +246,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   struct RClass *mrb_ckb, *cell;
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
   cell = mrb_define_class(mrb, "Cell", mrb_ckb);
   mrb_define_method(mrb, cell, "length", ckb_mrb_cell_length, MRB_ARGS_NONE());
