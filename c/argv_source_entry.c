@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     }
 #else
     mrb_value str = mrb_inspect(mrb, mrb_obj_value(mrb->exc));
-    syscall_errno(2051, mrb_string_value_cstr(mrb, &str), 0, 0, 0, 0, 0);
+    syscall_errno(2177, mrb_string_value_cstr(mrb, &str), 0, 0, 0, 0, 0);
 #endif
     return -1;
   }
