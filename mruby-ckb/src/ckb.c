@@ -24,7 +24,7 @@ bytes_to_string(ns(Bytes_table_t) bytes, mrb_state *mrb)
   flatbuffers_uint8_vec_t seq = ns(Bytes_seq(bytes));
   size_t len = flatbuffers_uint8_vec_len(seq);
 
-  if (len != 256) {
+  if (len != 32) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong bytes length!");
   }
 
@@ -93,32 +93,6 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
     mrb_hash_set(mrb, minput, mrb_str_new_lit(mrb, "index"),
                  mrb_fixnum_value(ns(CellInput_index(input))));
 
-    ns(Script_table_t) script = ns(CellInput_unlock(input));
-    mrb_value mscript = mrb_hash_new(mrb);
-    mrb_hash_set(mrb, mscript, mrb_str_new_lit(mrb, "version"),
-                 mrb_fixnum_value(ns(Script_version(script))));
-    ns(Bytes_vec_t) arguments = ns(Script_arguments(script));
-    size_t arguments_len = ns(Bytes_vec_len(arguments));
-    mrb_value marguments = mrb_ary_new_capa(mrb, arguments_len);
-    for (int j = 0; j < arguments_len; j++) {
-      mrb_ary_push(mrb, marguments, bytes_to_string(ns(Bytes_vec_at(arguments, j)), mrb));
-    }
-    mrb_hash_set(mrb, mscript, mrb_str_new_lit(mrb, "arguments"), marguments);
-    mrb_hash_set(mrb, mscript, mrb_str_new_lit(mrb, "redeem_script"),
-                 bytes_to_string(ns(Script_redeem_script(script)), mrb));
-    mrb_hash_set(mrb, mscript, mrb_str_new_lit(mrb, "redeem_reference"),
-                 outpoint_to_value(ns(Script_redeem_reference(script)), mrb));
-    ns(Bytes_vec_t) redeem_arguments = ns(Script_redeem_arguments(script));
-    size_t redeem_arguments_len = ns(Bytes_vec_len(redeem_arguments));
-    mrb_value mredeem_arguments = mrb_ary_new_capa(mrb, redeem_arguments_len);
-    for (int j = 0; j < redeem_arguments_len; j++) {
-      mrb_ary_push(mrb, mredeem_arguments,
-                   bytes_to_string(ns(Bytes_vec_at(redeem_arguments, j)), mrb));
-    }
-    mrb_hash_set(mrb, mscript, mrb_str_new_lit(mrb, "redeem_arguments"),
-                 mredeem_arguments);
-
-    mrb_hash_set(mrb, minput, mrb_str_new_lit(mrb, "unlock"), mscript);
     mrb_ary_push(mrb, minputs, minput);
   }
   mrb_hash_set(mrb, mtx, mrb_str_new_lit(mrb, "inputs"), minputs);
@@ -150,7 +124,7 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
   mrb_value s;
   int ret;
 
-  mrb_get_args(mrb, "ii", &index, &source, &category);
+  mrb_get_args(mrb, "iii", &index, &source, &category);
 
   len = 32;
   s = mrb_str_new_capa(mrb, len);
