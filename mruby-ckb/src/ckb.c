@@ -248,7 +248,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
-  cell = mrb_define_class(mrb, "Cell", mrb_ckb);
+  cell = mrb_define_class_under(mrb, mrb_ckb, "Cell", mrb->object_class);
   mrb_define_method(mrb, cell, "length", ckb_mrb_cell_length, MRB_ARGS_NONE());
   mrb_define_method(mrb, cell, "read", ckb_mrb_cell_read, MRB_ARGS_REQ(2));
   mrb_define_method(mrb, cell, "readall", ckb_mrb_cell_readall, MRB_ARGS_NONE());

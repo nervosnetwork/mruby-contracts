@@ -135,7 +135,7 @@ int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t
   }
 }
 
-ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
+int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
 {
   char internal_buffer[MAX_FILENAME_LENGTH];
   snprintf(internal_buffer, MAX_FILENAME_LENGTH, "data/script_hashes/%ld/%ld/%ld", index, source, category);
