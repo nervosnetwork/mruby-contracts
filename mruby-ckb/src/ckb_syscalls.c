@@ -40,7 +40,7 @@ int ckb_mmap_tx(void* addr, uint64_t* len, unsigned mod, size_t offset)
 
 int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t index, size_t source)
 {
-  return syscall(SYS_ckb_mmap_cell, addr, len, mod, offset, 0, 0);
+  return syscall(SYS_ckb_mmap_cell, addr, len, mod, offset, index, source);
 }
 
 int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
