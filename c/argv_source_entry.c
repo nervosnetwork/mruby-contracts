@@ -5,11 +5,12 @@
 #include <mruby/irep.h>
 #include <mruby/string.h>
 
+#include "ckb_syscalls.h"
+
 #ifdef SECP256K1_CUSTOM_FUNCS
-#include <machine/syscall.h>
 void custom_abort()
 {
-  syscall_errno(93, 10, 0, 0, 0, 0, 0);
+  syscall(SYS_exit, 10, 0, 0, 0, 0, 0);
 }
 
 int custom_print_err(const char * arg, ...)
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
     }
 #else
     mrb_value str = mrb_inspect(mrb, mrb_obj_value(mrb->exc));
-    syscall_errno(2177, mrb_string_value_cstr(mrb, &str), 0, 0, 0, 0, 0);
+    ckb_debug(mrb_string_value_cstr(mrb, &str));
 #endif
     return -1;
   }

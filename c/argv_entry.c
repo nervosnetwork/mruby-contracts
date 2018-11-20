@@ -4,10 +4,10 @@
 #include <mruby/irep.h>
 
 #ifdef SECP256K1_CUSTOM_FUNCS
-#include <machine/syscall.h>
+#include "ckb_syscalls.h"
 void custom_abort()
 {
-  syscall_errno(93, 10, 0, 0, 0, 0, 0);
+  syscall(SYS_exit, 10, 0, 0, 0, 0, 0);
 }
 
 int custom_print_err(const char * arg, ...)

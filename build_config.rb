@@ -19,7 +19,7 @@ end
 MRuby::Build.new do |conf|
   toolchain :gcc
 
-  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1"
+  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -I ../c"
 
   conf.enable_bintest
   conf.enable_test
@@ -119,7 +119,7 @@ end
 MRuby::Build.new('riscv-gcc-spike') do |conf|
   toolchain :riscv_newlib
 
-  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1"
+  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -I ../c"
 
   conf.enable_bintest
   conf.enable_test
@@ -219,7 +219,7 @@ end
 MRuby::Build.new('riscv-gcc') do |conf|
   toolchain :riscv_newlib
 
-  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -DCKB_HAS_SYSCALLS -DSECP256K1_CUSTOM_FUNCS"
+  conf.cc.flags << "-I ../flatcc/include -I ../secp256k1/src -I ../secp256k1 -I ../c -DMRB_WITHOUT_FLOAT -DMRB_DISABLE_STDIO -DCKB_HAS_SYSCALLS -DSECP256K1_CUSTOM_FUNCS"
 
   # Use standard Array#pack, String#unpack methods
   conf.gem :core => "mruby-pack"
