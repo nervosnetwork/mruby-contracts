@@ -12,7 +12,19 @@ CKB mruby contract is a port of [mruby](https://github.com/mruby/mruby) on CKB V
 
 ## How to build
 
-In order to build this project, you should have RISC-V compilers available. One quicker way would be leveraging [riscv-tools](https://github.com/riscv/riscv-tools), following the official documents to build riscv-tools, and make sure to add the path to final binaries to `PATH`. One way to test this is `which riscv64-unknown-elf-gcc`.
+In order to build this project, you should have RISC-V compilers available. One quicker way would be leveraging [riscv-gnu-toolchain](https://github.com/riscv/riscv-gnu-toolchain):
+
+```bash
+$ mkdir riscv
+$ export RISCV=$(pwd)/riscv
+$ git clone https://github.com/riscv/riscv-gnu-toolchain
+$ cd riscv-gnu-toolchain
+# ckb-vm doesn't provide floating point support
+$ ./configure --prefix=$RISCV --with-arch=rv64imac
+$ make -j$(nproc)
+```
+
+When you are done building riscv-gnu-toolchain, make sure to add the path to final binaries(`$RISCV/bin`) to `PATH`. One way to test this is `which riscv64-unknown-elf-gcc`.
 
 Now you should be ready to build this project:
 
