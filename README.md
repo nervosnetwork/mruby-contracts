@@ -19,6 +19,7 @@ $ mkdir riscv
 $ export RISCV=$(pwd)/riscv
 $ git clone https://github.com/riscv/riscv-gnu-toolchain
 $ cd riscv-gnu-toolchain
+$ git submodule update --init --recursive --progress
 # ckb-vm doesn't provide floating point support
 $ ./configure --prefix=$RISCV --with-arch=rv64imac
 $ make -j$(nproc)
