@@ -22,6 +22,7 @@ $ cd riscv-gnu-toolchain
 $ git submodule update --init --recursive --progress
 # ckb-vm doesn't provide floating point support
 $ ./configure --prefix=$RISCV --with-arch=rv64imac
+# On macOS use `make -j$(getconf _NPROCESSORS_ONLN)` instead as there's no nproc command
 $ make -j$(nproc)
 ```
 
