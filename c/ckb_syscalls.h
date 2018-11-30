@@ -8,6 +8,7 @@
 #define SYS_ckb_mmap_tx 2049
 #define SYS_ckb_mmap_cell 2050
 #define SYS_ckb_fetch_script_hash 2051
+#define SYS_ckb_fetch_current_script_hash 2052
 #define SYS_ckb_debug 2177
 
 static inline long
@@ -48,6 +49,11 @@ int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t
 int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category)
 {
   return syscall(SYS_ckb_fetch_script_hash, addr, len, index, source, category, 0);
+}
+
+int ckb_mmap_fetch_current_script_hash(void* addr, uint64_t* len)
+{
+  return syscall(SYS_ckb_fetch_current_script_hash, addr, len, 0, 0, 0, 0);
 }
 
 int ckb_debug(const char* s)

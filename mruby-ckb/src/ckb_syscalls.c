@@ -107,6 +107,27 @@ int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t s
   }
 }
 
+int ckb_mmap_fetch_current_script_hash(void* addr, uint64_t* len)
+{
+  FILE *fp = fopen("data/current_script_hash", "rb");
+  if (fp == NULL) {
+    return 2;
+  }
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  if (*len < size) {
+    *len = size;
+    fclose(fp);
+    return 1;
+  } else {
+    *len = fread(addr, 1, size, fp);
+    fclose(fp);
+    return 0;
+  }
+}
+
 int ckb_debug(const char* s)
 {
   return puts(s);
