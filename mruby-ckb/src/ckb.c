@@ -4,20 +4,21 @@
 #include "mruby/string.h"
 #include "mruby/variable.h"
 
+#include "ckb_consts.h"
 #include "protocol_reader.h"
 
 #undef ns
 #define ns(x) FLATBUFFERS_WRAP_NAMESPACE(Ckb_Protocol, x)
 
-#define SUCCESS 0
-#define OVERRIDE_LEN 1
-#define ITEM_MISSING 2
-
-extern int ckb_mmap_tx(void* addr, uint64_t* len, unsigned mod, size_t offset);
-extern int ckb_mmap_cell(void* addr, uint64_t* len, unsigned mod, size_t offset, size_t index, size_t source);
-extern int ckb_mmap_fetch_script_hash(void* addr, uint64_t* len, size_t index, size_t source, size_t category);
-extern int ckb_mmap_fetch_current_script_hash(void* addr, uint64_t* len);
+extern int ckb_load_tx(void* addr, uint64_t* len, size_t offset);
+extern int ckb_load_cell(void* addr, uint64_t* len, size_t offset,
+                         size_t index, size_t source);
+extern int ckb_load_cell_by_field(void* addr, uint64_t* len, size_t offset,
+                           size_t index, size_t source, size_t field);
+extern int ckb_load_input_by_field(void* addr, uint64_t* len, size_t offset,
+                            size_t index, size_t source, size_t field);
 extern int ckb_debug(const char* s);
+
 
 static mrb_value
 bytes_to_string(ns(Bytes_table_t) bytes, mrb_state *mrb)
@@ -52,7 +53,7 @@ static mrb_value
 ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
 {
   uint64_t len = 0;
-  if (ckb_mmap_tx(0, &len, 0, 0) != OVERRIDE_LEN) {
+  if (ckb_load_tx(0, &len, 0) != CKB_SUCCESS) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load tx return value!");
   }
 
@@ -61,7 +62,7 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
     mrb_raise(mrb, E_ARGUMENT_ERROR, "not enough memory!");
   }
 
-  if (ckb_mmap_tx(addr, &len, 0, 0) != SUCCESS) {
+  if (ckb_load_tx(addr, &len, 0) != CKB_SUCCESS) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "error loading tx!");
   }
 
@@ -127,31 +128,17 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
 
   mrb_get_args(mrb, "iii", &index, &source, &category);
 
-  len = 32;
-  s = mrb_str_new_capa(mrb, len);
-  ret = ckb_mmap_fetch_script_hash(RSTRING_PTR(s), &len, index, source, category);
-  if (ret == OVERRIDE_LEN) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "buffer length is not enough!");
-  } else if (ret == ITEM_MISSING) {
-    return mrb_nil_value();
+  if (category != CKB_CELL_FIELD_LOCK_HASH &&
+      category != CKB_CELL_FIELD_CONTRACT_HASH) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid category argument!");
   }
-  RSTR_SET_LEN(mrb_str_ptr(s), len);
-  return s;
-}
-
-static mrb_value
-ckb_mrb_load_current_script_hash(mrb_state *mrb, mrb_value obj)
-{
-  uint64_t len;
-  mrb_value s;
-  int ret;
 
   len = 32;
   s = mrb_str_new_capa(mrb, len);
-  ret = ckb_mmap_fetch_current_script_hash(RSTRING_PTR(s), &len);
-  if (ret == OVERRIDE_LEN) {
+  ret = ckb_load_cell_by_field(RSTRING_PTR(s), &len, 0, index, source, category);
+  if (len != 32) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "buffer length is not enough!");
-  } else if (ret == ITEM_MISSING) {
+  } else if (ret == CKB_ITEM_MISSING) {
     return mrb_nil_value();
   }
   RSTR_SET_LEN(mrb_str_ptr(s), len);
@@ -172,81 +159,115 @@ ckb_mrb_debug(mrb_state *mrb, mrb_value obj)
 }
 
 static mrb_value
-ckb_mrb_cell_length(mrb_state *mrb, mrb_value self)
+ckb_mrb_cell_internal_read(mrb_state *mrb, mrb_value self)
 {
-  mrb_int source, index;
-  uint64_t len;
+  mrb_int source, index, len, offset;
+  mrb_value buf;
+  uint64_t buf_len;
+  void* p;
 
   source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
   index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
 
-  len = 0;
-  if (ckb_mmap_cell(NULL, &len, 0, 0, index, source) != 1) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
-  }
+  mrb_get_args(mrb, "i|i", &len, &offset);
 
-  return mrb_fixnum_value(len);
+  buf_len = len;
+  if (buf_len == 0) {
+    if (ckb_load_cell(NULL, &buf_len, 0, index, source) != CKB_SUCCESS) {
+      buf_len = 0;
+    }
+
+    return mrb_fixnum_value(buf_len);
+  } else {
+    buf = mrb_str_new_capa(mrb, buf_len);
+    if (ckb_load_cell(RSTRING_PTR(buf), &buf_len, offset, index, source) != CKB_SUCCESS) {
+      return mrb_nil_value();
+    }
+    RSTR_SET_LEN(mrb_str_ptr(buf), buf_len);
+
+    return buf;
+  }
 }
 
 static mrb_value
-ckb_mrb_cell_read(mrb_state *mrb, mrb_value self)
+ckb_mrb_cell_field_internal_read(mrb_state *mrb, mrb_value self)
 {
-  mrb_int source, index, offset, length;
+  mrb_int source, index, len, offset, field;
   mrb_value buf;
-  uint64_t len;
-
-  mrb_get_args(mrb, "ii", &offset, &length);
+  uint64_t buf_len;
+  void* p;
 
   source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
   index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
+  field = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@field")));
 
-  buf = mrb_str_new_capa(mrb, length);
-  len = length;
-  if (ckb_mmap_cell(RSTRING_PTR(buf), &len, 1, offset, index, source) != 0) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  mrb_get_args(mrb, "i|i", &len, &offset);
+
+  buf_len = len;
+  if (buf_len == 0) {
+    if (ckb_load_cell_by_field(NULL, &buf_len, 0, index, source, field) != CKB_SUCCESS) {
+      buf_len = 0;
+    }
+
+    return mrb_fixnum_value(buf_len);
+  } else {
+    buf = mrb_str_new_capa(mrb, buf_len);
+    if (ckb_load_cell_by_field(RSTRING_PTR(buf), &buf_len, offset, index, source, field) != CKB_SUCCESS) {
+      return mrb_nil_value();
+    }
+    RSTR_SET_LEN(mrb_str_ptr(buf), buf_len);
+
+    return buf;
   }
-  RSTR_SET_LEN(mrb_str_ptr(buf), len);
-
-  return buf;
 }
 
 static mrb_value
-ckb_mrb_cell_readall(mrb_state *mrb, mrb_value self)
+ckb_mrb_input_field_internal_read(mrb_state *mrb, mrb_value self)
 {
-  mrb_int source, index;
+  mrb_int source, index, len, offset, field;
   mrb_value buf;
-  uint64_t len;
+  uint64_t buf_len;
+  void* p;
 
   source = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@source")));
   index = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@index")));
+  field = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@field")));
 
-  len = 0;
-  if (ckb_mmap_cell(NULL, &len, 0, 0, index, source) != 1) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
+  mrb_get_args(mrb, "i|i", &len, &offset);
+
+  buf_len = len;
+  if (buf_len == 0) {
+    if (ckb_load_input_by_field(NULL, &buf_len, 0, index, source, field) != CKB_SUCCESS) {
+      buf_len = 0;
+    }
+
+    return mrb_fixnum_value(buf_len);
+  } else {
+    buf = mrb_str_new_capa(mrb, buf_len);
+    if (ckb_load_input_by_field(RSTRING_PTR(buf), &buf_len, offset, index, source, field) != CKB_SUCCESS) {
+      return mrb_nil_value();
+    }
+    RSTR_SET_LEN(mrb_str_ptr(buf), buf_len);
+
+    return buf;
   }
-
-  buf = mrb_str_new_capa(mrb, len);
-  if (ckb_mmap_cell(RSTRING_PTR(buf), &len, 0, 0, index, source) != 0) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid response from mmap cell!");
-  }
-  RSTR_SET_LEN(mrb_str_ptr(buf), len);
-
-  return buf;
 }
 
 void
 mrb_mruby_ckb_gem_init(mrb_state* mrb)
 {
-  struct RClass *mrb_ckb, *cell;
+  struct RClass *mrb_ckb, *reader, *cell, *cell_field, *input_field;
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
-  mrb_define_module_function(mrb, mrb_ckb, "load_current_script_hash", ckb_mrb_load_current_script_hash, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
-  cell = mrb_define_class_under(mrb, mrb_ckb, "Cell", mrb->object_class);
-  mrb_define_method(mrb, cell, "length", ckb_mrb_cell_length, MRB_ARGS_NONE());
-  mrb_define_method(mrb, cell, "read", ckb_mrb_cell_read, MRB_ARGS_REQ(2));
-  mrb_define_method(mrb, cell, "readall", ckb_mrb_cell_readall, MRB_ARGS_NONE());
+  reader = mrb_define_class_under(mrb, mrb_ckb, "Reader", mrb->object_class);
+  cell = mrb_define_class_under(mrb, mrb_ckb, "Cell", reader);
+  mrb_define_method(mrb, cell, "internal_read", ckb_mrb_cell_internal_read, MRB_ARGS_REQ(1));
+  cell_field = mrb_define_class_under(mrb, mrb_ckb, "CellField", reader);
+  mrb_define_method(mrb, cell_field, "internal_read", ckb_mrb_cell_field_internal_read, MRB_ARGS_REQ(1));
+  input_field = mrb_define_class_under(mrb, mrb_ckb, "InputField", reader);
+  mrb_define_method(mrb, cell_field, "internal_read", ckb_mrb_input_field_internal_read, MRB_ARGS_REQ(1));
 }
 
 void
