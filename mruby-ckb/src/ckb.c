@@ -267,7 +267,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   cell_field = mrb_define_class_under(mrb, mrb_ckb, "CellField", reader);
   mrb_define_method(mrb, cell_field, "internal_read", ckb_mrb_cell_field_internal_read, MRB_ARGS_REQ(1));
   input_field = mrb_define_class_under(mrb, mrb_ckb, "InputField", reader);
-  mrb_define_method(mrb, cell_field, "internal_read", ckb_mrb_input_field_internal_read, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, input_field, "internal_read", ckb_mrb_input_field_internal_read, MRB_ARGS_REQ(1));
 }
 
 void
