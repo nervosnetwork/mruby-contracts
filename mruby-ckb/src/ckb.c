@@ -146,6 +146,40 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
 }
 
 static mrb_value
+ckb_mrb_load_input_out_point(mrb_state *mrb, mrb_value obj)
+{
+  mrb_int index, source;
+  uint64_t len = 0;
+  void* addr;
+
+  mrb_get_args(mrb, "ii", &index, &source);
+
+  if (ckb_load_input_by_field(0, &len, 0, index, source, CKB_INPUT_FIELD_OUT_POINT) == CKB_ITEM_MISSING) {
+    return mrb_nil_value();
+  }
+
+  addr = malloc(len);
+  if (addr == NULL) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "not enough memory!");
+  }
+
+  if (ckb_load_input_by_field(addr, &len, 0, index, source, CKB_INPUT_FIELD_OUT_POINT) != CKB_SUCCESS) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error loading input outpoint!");
+  }
+
+  ns(OutPoint_table_t) op;
+  if (!(op = ns(OutPoint_as_root(addr)))) {
+    free(addr);
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing outpoint!");
+  }
+
+  mrb_value o = outpoint_to_value(op, mrb);
+
+  free(addr);
+  return o;
+}
+
+static mrb_value
 ckb_mrb_debug(mrb_state *mrb, mrb_value obj)
 {
   mrb_value s;
@@ -260,6 +294,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
+  mrb_define_module_function(mrb, mrb_ckb, "load_input_out_point", ckb_mrb_load_input_out_point, MRB_ARGS_REQ(2));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
   reader = mrb_define_class_under(mrb, mrb_ckb, "Reader", mrb->object_class);
   cell = mrb_define_class_under(mrb, mrb_ckb, "Cell", reader);
