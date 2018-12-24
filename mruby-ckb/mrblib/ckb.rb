@@ -1,8 +1,9 @@
 module CKB
   module Source
-    INPUT = 0
-    OUTPUT = 1
-    CURRENT = 2
+    CURRENT = 0
+    INPUT = 1
+    OUTPUT = 2
+    DEP = 3
   end
 
   class Reader
@@ -33,9 +34,10 @@ module CKB
   class CellField < Reader
     CAPACITY = 0
     DATA = 1
-    LOCK_HASH = 2
-    CONTRACT = 3
-    CONTRACT_HASH = 4
+    DATA_HASH = 2
+    LOCK_HASH = 3
+    CONTRACT = 4
+    CONTRACT_HASH = 5
 
     def initialize(source, index, cell_field)
       @source = source
