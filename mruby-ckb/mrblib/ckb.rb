@@ -36,8 +36,8 @@ module CKB
     DATA = 1
     DATA_HASH = 2
     LOCK_HASH = 3
-    CONTRACT = 4
-    CONTRACT_HASH = 5
+    TYPE = 4
+    TYPE_HASH = 5
 
     def initialize(source, index, cell_field)
       @source = source
@@ -59,6 +59,6 @@ module CKB
 
   module Category
     LOCK = CellField::LOCK_HASH
-    CONTRACT = CellField::CONTRACT_HASH
+    TYPE = CellField::TYPE_HASH
   end
 end

@@ -129,7 +129,7 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
   mrb_get_args(mrb, "iii", &index, &source, &category);
 
   if (category != CKB_CELL_FIELD_LOCK_HASH &&
-      category != CKB_CELL_FIELD_CONTRACT_HASH) {
+      category != CKB_CELL_FIELD_TYPE_HASH) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid category argument!");
   }
 
