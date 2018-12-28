@@ -19,6 +19,45 @@ extern int ckb_load_input_by_field(void* addr, uint64_t* len, size_t offset,
                             size_t index, size_t source, size_t field);
 extern int ckb_debug(const char* s);
 
+static mrb_value
+h256_to_string(ns(H256_struct_t) h256, mrb_state *mrb)
+{
+  mrb_value s = mrb_str_new_capa(mrb, 32);
+  RSTRING_PTR(s)[0] = ns(H256_u0(h256));
+  RSTRING_PTR(s)[1] = ns(H256_u1(h256));
+  RSTRING_PTR(s)[2] = ns(H256_u2(h256));
+  RSTRING_PTR(s)[3] = ns(H256_u3(h256));
+  RSTRING_PTR(s)[4] = ns(H256_u4(h256));
+  RSTRING_PTR(s)[5] = ns(H256_u5(h256));
+  RSTRING_PTR(s)[6] = ns(H256_u6(h256));
+  RSTRING_PTR(s)[7] = ns(H256_u7(h256));
+  RSTRING_PTR(s)[8] = ns(H256_u8(h256));
+  RSTRING_PTR(s)[9] = ns(H256_u9(h256));
+  RSTRING_PTR(s)[10] = ns(H256_u10(h256));
+  RSTRING_PTR(s)[11] = ns(H256_u11(h256));
+  RSTRING_PTR(s)[12] = ns(H256_u12(h256));
+  RSTRING_PTR(s)[13] = ns(H256_u13(h256));
+  RSTRING_PTR(s)[14] = ns(H256_u14(h256));
+  RSTRING_PTR(s)[15] = ns(H256_u15(h256));
+  RSTRING_PTR(s)[16] = ns(H256_u16(h256));
+  RSTRING_PTR(s)[17] = ns(H256_u17(h256));
+  RSTRING_PTR(s)[18] = ns(H256_u18(h256));
+  RSTRING_PTR(s)[19] = ns(H256_u19(h256));
+  RSTRING_PTR(s)[20] = ns(H256_u20(h256));
+  RSTRING_PTR(s)[21] = ns(H256_u21(h256));
+  RSTRING_PTR(s)[22] = ns(H256_u22(h256));
+  RSTRING_PTR(s)[23] = ns(H256_u23(h256));
+  RSTRING_PTR(s)[24] = ns(H256_u24(h256));
+  RSTRING_PTR(s)[25] = ns(H256_u25(h256));
+  RSTRING_PTR(s)[26] = ns(H256_u26(h256));
+  RSTRING_PTR(s)[27] = ns(H256_u27(h256));
+  RSTRING_PTR(s)[28] = ns(H256_u28(h256));
+  RSTRING_PTR(s)[29] = ns(H256_u29(h256));
+  RSTRING_PTR(s)[30] = ns(H256_u30(h256));
+  RSTRING_PTR(s)[31] = ns(H256_u31(h256));
+  RSTR_SET_LEN(mrb_str_ptr(s), 32);
+  return s;
+}
 
 static mrb_value
 bytes_to_string(ns(Bytes_table_t) bytes, mrb_state *mrb)
@@ -43,9 +82,47 @@ outpoint_to_value(ns(OutPoint_table_t) outpoint, mrb_state *mrb)
 {
   mrb_value v = mrb_hash_new(mrb);
   mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "hash"),
-               bytes_to_string(ns(OutPoint_hash(outpoint)), mrb));
+               h256_to_string(ns(OutPoint_hash(outpoint)), mrb));
   mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "index"),
                mrb_fixnum_value(ns(OutPoint_index(outpoint))));
+  return v;
+}
+
+static mrb_value
+script_to_value(ns(Script_table_t) script, mrb_state *mrb)
+{
+  mrb_value v = mrb_hash_new(mrb);
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "version"),
+               mrb_fixnum_value(ns(Script_version(script))));
+
+  ns(Bytes_vec_t) args = ns(Script_args(script));
+  size_t args_len = ns(Bytes_vec_len(args));
+  mrb_value margs = mrb_ary_new_capa(mrb, args_len);
+  for (int i = 0; i < args_len; i++) {
+    mrb_ary_push(mrb, margs, bytes_to_string(ns(Bytes_vec_at(args, i)), mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "args"), margs);
+
+  ns(Bytes_table_t) binary = ns(Script_binary(script));
+  if (binary) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "binary"),
+                 bytes_to_string(binary, mrb));
+  }
+
+  ns(H256_struct_t) reference = ns(Script_reference(script));
+  if (reference) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "reference"),
+                 h256_to_string(reference, mrb));
+  }
+
+  ns(Bytes_vec_t) signed_args = ns(Script_signed_args(script));
+  size_t signed_args_len = ns(Bytes_vec_len(signed_args));
+  mrb_value msigned_args = mrb_ary_new_capa(mrb, signed_args_len);
+  for (int i = 0; i < signed_args_len; i++) {
+    mrb_ary_push(mrb, msigned_args, bytes_to_string(ns(Bytes_vec_at(signed_args, i)), mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "signed_args"), msigned_args);
+
   return v;
 }
 
@@ -91,7 +168,7 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
     ns(CellInput_table_t) input = ns(CellInput_vec_at(inputs, i));
     mrb_value minput = mrb_hash_new(mrb);
     mrb_hash_set(mrb, minput, mrb_str_new_lit(mrb, "hash"),
-                 bytes_to_string(ns(CellInput_hash(input)), mrb));
+                 h256_to_string(ns(CellInput_hash(input)), mrb));
     mrb_hash_set(mrb, minput, mrb_str_new_lit(mrb, "index"),
                  mrb_fixnum_value(ns(CellInput_index(input))));
 
@@ -108,7 +185,7 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
     mrb_hash_set(mrb, moutput, mrb_str_new_lit(mrb, "capacity"),
                  mrb_fixnum_value(ns(CellOutput_capacity(output))));
     mrb_hash_set(mrb, moutput, mrb_str_new_lit(mrb, "lock"),
-                 bytes_to_string(ns(CellOutput_lock(output)), mrb));
+                 h256_to_string(ns(CellOutput_lock(output)), mrb));
 
     mrb_ary_push(mrb, moutputs, moutput);
   }
@@ -143,6 +220,88 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
   }
   RSTR_SET_LEN(mrb_str_ptr(s), len);
   return s;
+}
+
+static mrb_value
+ckb_mrb_load_output_type_script(mrb_state *mrb, mrb_value obj)
+{
+  mrb_int index;
+  uint64_t len;
+  mrb_value v;
+  int ret;
+  void *addr = NULL;
+
+  mrb_get_args(mrb, "i", &index);
+
+  len = 0;
+  ret = ckb_load_cell_by_field(NULL, &len, 0, index, CKB_SOURCE_OUTPUT, CKB_CELL_FIELD_TYPE);
+  if (ret == CKB_ITEM_MISSING) {
+    return mrb_nil_value();
+  }
+  if (ret != CKB_SUCCESS) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load cell by field return value!");
+  }
+
+  addr = malloc(len);
+  if (addr == NULL) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "not enough memory!");
+  }
+
+  ret = ckb_load_cell_by_field(addr, &len, 0, index, CKB_SOURCE_OUTPUT, CKB_CELL_FIELD_TYPE);
+  if (ret != CKB_SUCCESS) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load cell by field return value!");
+  }
+
+  ns(Script_table_t) script;
+  if (!(script = ns(Script_as_root(addr)))) {
+    free(addr);
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing script!");
+  }
+
+  v = script_to_value(script, mrb);
+  free(addr);
+  return v;
+}
+
+static mrb_value
+ckb_mrb_load_input_unlock_script(mrb_state *mrb, mrb_value obj)
+{
+  mrb_int index;
+  uint64_t len;
+  mrb_value v;
+  int ret;
+  void *addr = NULL;
+
+  mrb_get_args(mrb, "i", &index);
+
+  len = 0;
+  ret = ckb_load_input_by_field(NULL, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_UNLOCK);
+  if (ret == CKB_ITEM_MISSING) {
+    return mrb_nil_value();
+  }
+  if (ret != CKB_SUCCESS) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load cell by field return value!");
+  }
+
+  addr = malloc(len);
+  if (addr == NULL) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "not enough memory!");
+  }
+
+  ret = ckb_load_input_by_field(addr, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_UNLOCK);
+  if (ret != CKB_SUCCESS) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load cell by field return value!");
+  }
+
+  ns(Script_table_t) script;
+  if (!(script = ns(Script_as_root(addr)))) {
+    free(addr);
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing script!");
+  }
+
+  v = script_to_value(script, mrb);
+  free(addr);
+  return v;
 }
 
 static mrb_value
@@ -294,6 +453,8 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
+  mrb_define_module_function(mrb, mrb_ckb, "load_output_type_script", ckb_mrb_load_output_type_script, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "load_input_unlock_script", ckb_mrb_load_input_unlock_script, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_ckb, "load_input_out_point", ckb_mrb_load_input_out_point, MRB_ARGS_REQ(2));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
   reader = mrb_define_class_under(mrb, mrb_ckb, "Reader", mrb->object_class);
