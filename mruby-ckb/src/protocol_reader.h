@@ -18,6 +18,16 @@
 #define flatbuffers_extension ".bin"
 #endif
 
+typedef struct Ckb_Protocol_ProposalShortId Ckb_Protocol_ProposalShortId_t;
+typedef const Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId_struct_t;
+typedef Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId_mutable_struct_t;
+typedef const Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId_vec_t;
+typedef Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId_mutable_vec_t;
+typedef struct Ckb_Protocol_H256 Ckb_Protocol_H256_t;
+typedef const Ckb_Protocol_H256_t *Ckb_Protocol_H256_struct_t;
+typedef Ckb_Protocol_H256_t *Ckb_Protocol_H256_mutable_struct_t;
+typedef const Ckb_Protocol_H256_t *Ckb_Protocol_H256_vec_t;
+typedef Ckb_Protocol_H256_t *Ckb_Protocol_H256_mutable_vec_t;
 
 typedef const struct Ckb_Protocol_SyncMessage_table *Ckb_Protocol_SyncMessage_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_SyncMessage_vec_t;
@@ -64,9 +74,9 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_RelayMessage_mutable_vec_t;
 typedef const struct Ckb_Protocol_CompactBlock_table *Ckb_Protocol_CompactBlock_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_CompactBlock_vec_t;
 typedef flatbuffers_uoffset_t *Ckb_Protocol_CompactBlock_mutable_vec_t;
-typedef const struct Ckb_Protocol_PrefilledTransaction_table *Ckb_Protocol_PrefilledTransaction_table_t;
-typedef const flatbuffers_uoffset_t *Ckb_Protocol_PrefilledTransaction_vec_t;
-typedef flatbuffers_uoffset_t *Ckb_Protocol_PrefilledTransaction_mutable_vec_t;
+typedef const struct Ckb_Protocol_IndexTransaction_table *Ckb_Protocol_IndexTransaction_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_IndexTransaction_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_IndexTransaction_mutable_vec_t;
 typedef const struct Ckb_Protocol_GetBlockTransactions_table *Ckb_Protocol_GetBlockTransactions_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_GetBlockTransactions_vec_t;
 typedef flatbuffers_uoffset_t *Ckb_Protocol_GetBlockTransactions_mutable_vec_t;
@@ -79,6 +89,18 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_GetBlockProposal_mutable_vec_t;
 typedef const struct Ckb_Protocol_BlockProposal_table *Ckb_Protocol_BlockProposal_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_BlockProposal_vec_t;
 typedef flatbuffers_uoffset_t *Ckb_Protocol_BlockProposal_mutable_vec_t;
+typedef const struct Ckb_Protocol_SetFilter_table *Ckb_Protocol_SetFilter_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_SetFilter_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_SetFilter_mutable_vec_t;
+typedef const struct Ckb_Protocol_AddFilter_table *Ckb_Protocol_AddFilter_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_AddFilter_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_AddFilter_mutable_vec_t;
+typedef const struct Ckb_Protocol_ClearFilter_table *Ckb_Protocol_ClearFilter_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_ClearFilter_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_ClearFilter_mutable_vec_t;
+typedef const struct Ckb_Protocol_FilteredBlock_table *Ckb_Protocol_FilteredBlock_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_FilteredBlock_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_FilteredBlock_mutable_vec_t;
 #ifndef Ckb_Protocol_SyncMessage_identifier
 #define Ckb_Protocol_SyncMessage_identifier flatbuffers_identifier
 #endif
@@ -154,11 +176,11 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_BlockProposal_mutable_vec_t;
 #endif
 #define Ckb_Protocol_CompactBlock_type_hash ((flatbuffers_thash_t)0x22848a39)
 #define Ckb_Protocol_CompactBlock_type_identifier "\x39\x8a\x84\x22"
-#ifndef Ckb_Protocol_PrefilledTransaction_identifier
-#define Ckb_Protocol_PrefilledTransaction_identifier flatbuffers_identifier
+#ifndef Ckb_Protocol_IndexTransaction_identifier
+#define Ckb_Protocol_IndexTransaction_identifier flatbuffers_identifier
 #endif
-#define Ckb_Protocol_PrefilledTransaction_type_hash ((flatbuffers_thash_t)0xbedd9968)
-#define Ckb_Protocol_PrefilledTransaction_type_identifier "\x68\x99\xdd\xbe"
+#define Ckb_Protocol_IndexTransaction_type_hash ((flatbuffers_thash_t)0x74d36d43)
+#define Ckb_Protocol_IndexTransaction_type_identifier "\x43\x6d\xd3\x74"
 #ifndef Ckb_Protocol_GetBlockTransactions_identifier
 #define Ckb_Protocol_GetBlockTransactions_identifier flatbuffers_identifier
 #endif
@@ -179,7 +201,149 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_BlockProposal_mutable_vec_t;
 #endif
 #define Ckb_Protocol_BlockProposal_type_hash ((flatbuffers_thash_t)0x8523d6b6)
 #define Ckb_Protocol_BlockProposal_type_identifier "\xb6\xd6\x23\x85"
+#ifndef Ckb_Protocol_ProposalShortId_identifier
+#define Ckb_Protocol_ProposalShortId_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_ProposalShortId_type_hash ((flatbuffers_thash_t)0xd47f76bc)
+#define Ckb_Protocol_ProposalShortId_type_identifier "\xbc\x76\x7f\xd4"
+#ifndef Ckb_Protocol_H256_identifier
+#define Ckb_Protocol_H256_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_H256_type_hash ((flatbuffers_thash_t)0x35ce4b52)
+#define Ckb_Protocol_H256_type_identifier "\x52\x4b\xce\x35"
+#ifndef Ckb_Protocol_SetFilter_identifier
+#define Ckb_Protocol_SetFilter_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_SetFilter_type_hash ((flatbuffers_thash_t)0x4dc475b7)
+#define Ckb_Protocol_SetFilter_type_identifier "\xb7\x75\xc4\x4d"
+#ifndef Ckb_Protocol_AddFilter_identifier
+#define Ckb_Protocol_AddFilter_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_AddFilter_type_hash ((flatbuffers_thash_t)0x3af5a7d4)
+#define Ckb_Protocol_AddFilter_type_identifier "\xd4\xa7\xf5\x3a"
+#ifndef Ckb_Protocol_ClearFilter_identifier
+#define Ckb_Protocol_ClearFilter_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_ClearFilter_type_hash ((flatbuffers_thash_t)0xd5089c62)
+#define Ckb_Protocol_ClearFilter_type_identifier "\x62\x9c\x08\xd5"
+#ifndef Ckb_Protocol_FilteredBlock_identifier
+#define Ckb_Protocol_FilteredBlock_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_FilteredBlock_type_hash ((flatbuffers_thash_t)0xf12df2e1)
+#define Ckb_Protocol_FilteredBlock_type_identifier "\xe1\xf2\x2d\xf1"
 
+
+struct Ckb_Protocol_ProposalShortId {
+    alignas(1) uint8_t u0;
+    alignas(1) uint8_t u1;
+    alignas(1) uint8_t u2;
+    alignas(1) uint8_t u3;
+    alignas(1) uint8_t u4;
+    alignas(1) uint8_t u5;
+    alignas(1) uint8_t u6;
+    alignas(1) uint8_t u7;
+    alignas(1) uint8_t u8;
+    alignas(1) uint8_t u9;
+};
+static_assert(sizeof(Ckb_Protocol_ProposalShortId_t) == 10, "struct size mismatch");
+
+static inline const Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId__const_ptr_add(const Ckb_Protocol_ProposalShortId_t *p, size_t i) { return p + i; }
+static inline Ckb_Protocol_ProposalShortId_t *Ckb_Protocol_ProposalShortId__ptr_add(Ckb_Protocol_ProposalShortId_t *p, size_t i) { return p + i; }
+static inline Ckb_Protocol_ProposalShortId_struct_t Ckb_Protocol_ProposalShortId_vec_at(Ckb_Protocol_ProposalShortId_vec_t vec, size_t i)
+__flatbuffers_struct_vec_at(vec, i)
+static inline size_t Ckb_Protocol_ProposalShortId__size() { return 10; }
+static inline size_t Ckb_Protocol_ProposalShortId_vec_len(Ckb_Protocol_ProposalShortId_vec_t vec)
+__flatbuffers_vec_len(vec)
+__flatbuffers_struct_as_root(Ckb_Protocol_ProposalShortId)
+
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u0, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u1, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u2, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u3, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u4, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u5, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u6, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u7, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u8, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_ProposalShortId, u9, flatbuffers_uint8, uint8_t)
+
+struct Ckb_Protocol_H256 {
+    alignas(1) uint8_t u0;
+    alignas(1) uint8_t u1;
+    alignas(1) uint8_t u2;
+    alignas(1) uint8_t u3;
+    alignas(1) uint8_t u4;
+    alignas(1) uint8_t u5;
+    alignas(1) uint8_t u6;
+    alignas(1) uint8_t u7;
+    alignas(1) uint8_t u8;
+    alignas(1) uint8_t u9;
+    alignas(1) uint8_t u10;
+    alignas(1) uint8_t u11;
+    alignas(1) uint8_t u12;
+    alignas(1) uint8_t u13;
+    alignas(1) uint8_t u14;
+    alignas(1) uint8_t u15;
+    alignas(1) uint8_t u16;
+    alignas(1) uint8_t u17;
+    alignas(1) uint8_t u18;
+    alignas(1) uint8_t u19;
+    alignas(1) uint8_t u20;
+    alignas(1) uint8_t u21;
+    alignas(1) uint8_t u22;
+    alignas(1) uint8_t u23;
+    alignas(1) uint8_t u24;
+    alignas(1) uint8_t u25;
+    alignas(1) uint8_t u26;
+    alignas(1) uint8_t u27;
+    alignas(1) uint8_t u28;
+    alignas(1) uint8_t u29;
+    alignas(1) uint8_t u30;
+    alignas(1) uint8_t u31;
+};
+static_assert(sizeof(Ckb_Protocol_H256_t) == 32, "struct size mismatch");
+
+static inline const Ckb_Protocol_H256_t *Ckb_Protocol_H256__const_ptr_add(const Ckb_Protocol_H256_t *p, size_t i) { return p + i; }
+static inline Ckb_Protocol_H256_t *Ckb_Protocol_H256__ptr_add(Ckb_Protocol_H256_t *p, size_t i) { return p + i; }
+static inline Ckb_Protocol_H256_struct_t Ckb_Protocol_H256_vec_at(Ckb_Protocol_H256_vec_t vec, size_t i)
+__flatbuffers_struct_vec_at(vec, i)
+static inline size_t Ckb_Protocol_H256__size() { return 32; }
+static inline size_t Ckb_Protocol_H256_vec_len(Ckb_Protocol_H256_vec_t vec)
+__flatbuffers_vec_len(vec)
+__flatbuffers_struct_as_root(Ckb_Protocol_H256)
+
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u0, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u1, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u2, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u3, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u4, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u5, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u6, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u7, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u8, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u9, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u10, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u11, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u12, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u13, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u14, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u15, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u16, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u17, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u18, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u19, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u20, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u21, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u22, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u23, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u24, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u25, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u26, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u27, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u28, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u29, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u30, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(Ckb_Protocol_H256, u31, flatbuffers_uint8, uint8_t)
 
 typedef uint8_t Ckb_Protocol_SyncPayload_union_type_t;
 __flatbuffers_define_integer_type(Ckb_Protocol_SyncPayload, Ckb_Protocol_SyncPayload_union_type_t, 8)
@@ -189,6 +353,10 @@ __flatbuffers_define_union(flatbuffers_, Ckb_Protocol_SyncPayload)
 #define Ckb_Protocol_SyncPayload_Headers ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(2))
 #define Ckb_Protocol_SyncPayload_GetBlocks ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(3))
 #define Ckb_Protocol_SyncPayload_Block ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(4))
+#define Ckb_Protocol_SyncPayload_SetFilter ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(5))
+#define Ckb_Protocol_SyncPayload_AddFilter ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(6))
+#define Ckb_Protocol_SyncPayload_ClearFilter ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(7))
+#define Ckb_Protocol_SyncPayload_FilteredBlock ((Ckb_Protocol_SyncPayload_union_type_t)UINT8_C(8))
 
 static inline const char *Ckb_Protocol_SyncPayload_type_name(Ckb_Protocol_SyncPayload_union_type_t type)
 {
@@ -198,6 +366,10 @@ static inline const char *Ckb_Protocol_SyncPayload_type_name(Ckb_Protocol_SyncPa
     case Ckb_Protocol_SyncPayload_Headers: return "Headers";
     case Ckb_Protocol_SyncPayload_GetBlocks: return "GetBlocks";
     case Ckb_Protocol_SyncPayload_Block: return "Block";
+    case Ckb_Protocol_SyncPayload_SetFilter: return "SetFilter";
+    case Ckb_Protocol_SyncPayload_AddFilter: return "AddFilter";
+    case Ckb_Protocol_SyncPayload_ClearFilter: return "ClearFilter";
+    case Ckb_Protocol_SyncPayload_FilteredBlock: return "FilteredBlock";
     default: return "";
     }
 }
@@ -210,6 +382,10 @@ static inline int Ckb_Protocol_SyncPayload_is_known_type(Ckb_Protocol_SyncPayloa
     case Ckb_Protocol_SyncPayload_Headers: return 1;
     case Ckb_Protocol_SyncPayload_GetBlocks: return 1;
     case Ckb_Protocol_SyncPayload_Block: return 1;
+    case Ckb_Protocol_SyncPayload_SetFilter: return 1;
+    case Ckb_Protocol_SyncPayload_AddFilter: return 1;
+    case Ckb_Protocol_SyncPayload_ClearFilter: return 1;
+    case Ckb_Protocol_SyncPayload_FilteredBlock: return 1;
     default: return 0;
     }
 }
@@ -244,8 +420,8 @@ __flatbuffers_offset_vec_at(Ckb_Protocol_GetHeaders_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_GetHeaders)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_GetHeaders, version, flatbuffers_uint32, uint32_t, UINT32_C(0))
-__flatbuffers_define_vector_field(1, Ckb_Protocol_GetHeaders, block_locator_hashes, Ckb_Protocol_Bytes_vec_t, 0)
-__flatbuffers_define_table_field(2, Ckb_Protocol_GetHeaders, hash_stop, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_vector_field(1, Ckb_Protocol_GetHeaders, block_locator_hashes, Ckb_Protocol_H256_vec_t, 0)
+__flatbuffers_define_struct_field(2, Ckb_Protocol_GetHeaders, hash_stop, Ckb_Protocol_H256_struct_t, 0)
 
 struct Ckb_Protocol_GetBlocks_table { uint8_t unused__; };
 
@@ -255,7 +431,7 @@ static inline Ckb_Protocol_GetBlocks_table_t Ckb_Protocol_GetBlocks_vec_at(Ckb_P
 __flatbuffers_offset_vec_at(Ckb_Protocol_GetBlocks_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_GetBlocks)
 
-__flatbuffers_define_vector_field(0, Ckb_Protocol_GetBlocks, block_hashes, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(0, Ckb_Protocol_GetBlocks, block_hashes, Ckb_Protocol_H256_vec_t, 0)
 
 struct Ckb_Protocol_Headers_table { uint8_t unused__; };
 
@@ -276,16 +452,17 @@ __flatbuffers_offset_vec_at(Ckb_Protocol_Header_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_Header)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_Header, version, flatbuffers_uint32, uint32_t, UINT32_C(0))
-__flatbuffers_define_table_field(1, Ckb_Protocol_Header, parent_hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(1, Ckb_Protocol_Header, parent_hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_scalar_field(2, Ckb_Protocol_Header, timestamp, flatbuffers_uint64, uint64_t, UINT64_C(0))
 __flatbuffers_define_scalar_field(3, Ckb_Protocol_Header, number, flatbuffers_uint64, uint64_t, UINT64_C(0))
-__flatbuffers_define_table_field(4, Ckb_Protocol_Header, txs_commit, Ckb_Protocol_Bytes_table_t, 0)
-__flatbuffers_define_table_field(5, Ckb_Protocol_Header, txs_proposal, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(4, Ckb_Protocol_Header, txs_commit, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_struct_field(5, Ckb_Protocol_Header, txs_proposal, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_table_field(6, Ckb_Protocol_Header, difficulty, Ckb_Protocol_Bytes_table_t, 0)
 __flatbuffers_define_scalar_field(7, Ckb_Protocol_Header, nonce, flatbuffers_uint64, uint64_t, UINT64_C(0))
 __flatbuffers_define_table_field(8, Ckb_Protocol_Header, proof, Ckb_Protocol_Bytes_table_t, 0)
-__flatbuffers_define_table_field(9, Ckb_Protocol_Header, cellbase_id, Ckb_Protocol_Bytes_table_t, 0)
-__flatbuffers_define_table_field(10, Ckb_Protocol_Header, uncles_hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(9, Ckb_Protocol_Header, cellbase_id, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_struct_field(10, Ckb_Protocol_Header, uncles_hash, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_scalar_field(11, Ckb_Protocol_Header, uncles_count, flatbuffers_uint32, uint32_t, UINT32_C(0))
 
 struct Ckb_Protocol_Block_table { uint8_t unused__; };
 
@@ -298,7 +475,7 @@ __flatbuffers_table_as_root(Ckb_Protocol_Block)
 __flatbuffers_define_table_field(0, Ckb_Protocol_Block, header, Ckb_Protocol_Header_table_t, 0)
 __flatbuffers_define_vector_field(1, Ckb_Protocol_Block, uncles, Ckb_Protocol_UncleBlock_vec_t, 0)
 __flatbuffers_define_vector_field(2, Ckb_Protocol_Block, commit_transactions, Ckb_Protocol_Transaction_vec_t, 0)
-__flatbuffers_define_vector_field(3, Ckb_Protocol_Block, proposal_transactions, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(3, Ckb_Protocol_Block, proposal_transactions, Ckb_Protocol_ProposalShortId_vec_t, 0)
 
 struct Ckb_Protocol_UncleBlock_table { uint8_t unused__; };
 
@@ -310,7 +487,7 @@ __flatbuffers_table_as_root(Ckb_Protocol_UncleBlock)
 
 __flatbuffers_define_table_field(0, Ckb_Protocol_UncleBlock, header, Ckb_Protocol_Header_table_t, 0)
 __flatbuffers_define_table_field(1, Ckb_Protocol_UncleBlock, cellbase, Ckb_Protocol_Transaction_table_t, 0)
-__flatbuffers_define_vector_field(2, Ckb_Protocol_UncleBlock, proposal_transactions, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(2, Ckb_Protocol_UncleBlock, proposal_transactions, Ckb_Protocol_ProposalShortId_vec_t, 0)
 
 struct Ckb_Protocol_Transaction_table { uint8_t unused__; };
 
@@ -333,7 +510,7 @@ static inline Ckb_Protocol_OutPoint_table_t Ckb_Protocol_OutPoint_vec_at(Ckb_Pro
 __flatbuffers_offset_vec_at(Ckb_Protocol_OutPoint_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_OutPoint)
 
-__flatbuffers_define_table_field(0, Ckb_Protocol_OutPoint, hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(0, Ckb_Protocol_OutPoint, hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_scalar_field(1, Ckb_Protocol_OutPoint, index, flatbuffers_uint32, uint32_t, UINT32_C(0))
 
 struct Ckb_Protocol_CellInput_table { uint8_t unused__; };
@@ -344,7 +521,7 @@ static inline Ckb_Protocol_CellInput_table_t Ckb_Protocol_CellInput_vec_at(Ckb_P
 __flatbuffers_offset_vec_at(Ckb_Protocol_CellInput_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_CellInput)
 
-__flatbuffers_define_table_field(0, Ckb_Protocol_CellInput, hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(0, Ckb_Protocol_CellInput, hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_scalar_field(1, Ckb_Protocol_CellInput, index, flatbuffers_uint32, uint32_t, UINT32_C(0))
 __flatbuffers_define_table_field(2, Ckb_Protocol_CellInput, unlock, Ckb_Protocol_Script_table_t, 0)
 
@@ -358,7 +535,8 @@ __flatbuffers_table_as_root(Ckb_Protocol_CellOutput)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_CellOutput, capacity, flatbuffers_uint64, uint64_t, UINT64_C(0))
 __flatbuffers_define_table_field(1, Ckb_Protocol_CellOutput, data, Ckb_Protocol_Bytes_table_t, 0)
-__flatbuffers_define_table_field(2, Ckb_Protocol_CellOutput, lock, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(2, Ckb_Protocol_CellOutput, lock, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_table_field(3, Ckb_Protocol_CellOutput, type, Ckb_Protocol_Script_table_t, 0)
 
 struct Ckb_Protocol_Script_table { uint8_t unused__; };
 
@@ -369,10 +547,10 @@ __flatbuffers_offset_vec_at(Ckb_Protocol_Script_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_Script)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_Script, version, flatbuffers_uint8, uint8_t, UINT8_C(0))
-__flatbuffers_define_vector_field(1, Ckb_Protocol_Script, arguments, Ckb_Protocol_Bytes_vec_t, 0)
-__flatbuffers_define_table_field(2, Ckb_Protocol_Script, redeem_script, Ckb_Protocol_Bytes_table_t, 0)
-__flatbuffers_define_table_field(3, Ckb_Protocol_Script, redeem_reference, Ckb_Protocol_OutPoint_table_t, 0)
-__flatbuffers_define_vector_field(4, Ckb_Protocol_Script, redeem_arguments, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(1, Ckb_Protocol_Script, args, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_table_field(2, Ckb_Protocol_Script, binary, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(3, Ckb_Protocol_Script, reference, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_vector_field(4, Ckb_Protocol_Script, signed_args, Ckb_Protocol_Bytes_vec_t, 0)
 typedef uint8_t Ckb_Protocol_RelayPayload_union_type_t;
 __flatbuffers_define_integer_type(Ckb_Protocol_RelayPayload, Ckb_Protocol_RelayPayload_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, Ckb_Protocol_RelayPayload)
@@ -434,20 +612,20 @@ __flatbuffers_table_as_root(Ckb_Protocol_CompactBlock)
 __flatbuffers_define_table_field(0, Ckb_Protocol_CompactBlock, header, Ckb_Protocol_Header_table_t, 0)
 __flatbuffers_define_scalar_field(1, Ckb_Protocol_CompactBlock, nonce, flatbuffers_uint64, uint64_t, UINT64_C(0))
 __flatbuffers_define_vector_field(2, Ckb_Protocol_CompactBlock, short_ids, Ckb_Protocol_Bytes_vec_t, 0)
-__flatbuffers_define_vector_field(3, Ckb_Protocol_CompactBlock, prefilled_transactions, Ckb_Protocol_PrefilledTransaction_vec_t, 0)
+__flatbuffers_define_vector_field(3, Ckb_Protocol_CompactBlock, prefilled_transactions, Ckb_Protocol_IndexTransaction_vec_t, 0)
 __flatbuffers_define_vector_field(4, Ckb_Protocol_CompactBlock, uncles, Ckb_Protocol_UncleBlock_vec_t, 0)
-__flatbuffers_define_vector_field(5, Ckb_Protocol_CompactBlock, proposal_transactions, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(5, Ckb_Protocol_CompactBlock, proposal_transactions, Ckb_Protocol_ProposalShortId_vec_t, 0)
 
-struct Ckb_Protocol_PrefilledTransaction_table { uint8_t unused__; };
+struct Ckb_Protocol_IndexTransaction_table { uint8_t unused__; };
 
-static inline size_t Ckb_Protocol_PrefilledTransaction_vec_len(Ckb_Protocol_PrefilledTransaction_vec_t vec)
+static inline size_t Ckb_Protocol_IndexTransaction_vec_len(Ckb_Protocol_IndexTransaction_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline Ckb_Protocol_PrefilledTransaction_table_t Ckb_Protocol_PrefilledTransaction_vec_at(Ckb_Protocol_PrefilledTransaction_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(Ckb_Protocol_PrefilledTransaction_table_t, vec, i, 0)
-__flatbuffers_table_as_root(Ckb_Protocol_PrefilledTransaction)
+static inline Ckb_Protocol_IndexTransaction_table_t Ckb_Protocol_IndexTransaction_vec_at(Ckb_Protocol_IndexTransaction_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_IndexTransaction_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_IndexTransaction)
 
-__flatbuffers_define_scalar_field(0, Ckb_Protocol_PrefilledTransaction, index, flatbuffers_uint32, uint32_t, UINT32_C(0))
-__flatbuffers_define_table_field(1, Ckb_Protocol_PrefilledTransaction, transaction, Ckb_Protocol_Transaction_table_t, 0)
+__flatbuffers_define_scalar_field(0, Ckb_Protocol_IndexTransaction, index, flatbuffers_uint32, uint32_t, UINT32_C(0))
+__flatbuffers_define_table_field(1, Ckb_Protocol_IndexTransaction, transaction, Ckb_Protocol_Transaction_table_t, 0)
 
 struct Ckb_Protocol_GetBlockTransactions_table { uint8_t unused__; };
 
@@ -457,7 +635,7 @@ static inline Ckb_Protocol_GetBlockTransactions_table_t Ckb_Protocol_GetBlockTra
 __flatbuffers_offset_vec_at(Ckb_Protocol_GetBlockTransactions_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_GetBlockTransactions)
 
-__flatbuffers_define_table_field(0, Ckb_Protocol_GetBlockTransactions, hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(0, Ckb_Protocol_GetBlockTransactions, hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_vector_field(1, Ckb_Protocol_GetBlockTransactions, indexes, flatbuffers_uint32_vec_t, 0)
 
 struct Ckb_Protocol_BlockTransactions_table { uint8_t unused__; };
@@ -468,7 +646,7 @@ static inline Ckb_Protocol_BlockTransactions_table_t Ckb_Protocol_BlockTransacti
 __flatbuffers_offset_vec_at(Ckb_Protocol_BlockTransactions_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_BlockTransactions)
 
-__flatbuffers_define_table_field(0, Ckb_Protocol_BlockTransactions, hash, Ckb_Protocol_Bytes_table_t, 0)
+__flatbuffers_define_struct_field(0, Ckb_Protocol_BlockTransactions, hash, Ckb_Protocol_H256_struct_t, 0)
 __flatbuffers_define_vector_field(1, Ckb_Protocol_BlockTransactions, transactions, Ckb_Protocol_Transaction_vec_t, 0)
 
 struct Ckb_Protocol_GetBlockProposal_table { uint8_t unused__; };
@@ -480,7 +658,7 @@ __flatbuffers_offset_vec_at(Ckb_Protocol_GetBlockProposal_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_GetBlockProposal)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_GetBlockProposal, block_number, flatbuffers_uint64, uint64_t, UINT64_C(0))
-__flatbuffers_define_vector_field(1, Ckb_Protocol_GetBlockProposal, proposal_transactions, Ckb_Protocol_Bytes_vec_t, 0)
+__flatbuffers_define_vector_field(1, Ckb_Protocol_GetBlockProposal, proposal_transactions, Ckb_Protocol_ProposalShortId_vec_t, 0)
 
 struct Ckb_Protocol_BlockProposal_table { uint8_t unused__; };
 
@@ -491,6 +669,49 @@ __flatbuffers_offset_vec_at(Ckb_Protocol_BlockProposal_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Ckb_Protocol_BlockProposal)
 
 __flatbuffers_define_vector_field(0, Ckb_Protocol_BlockProposal, transactions, Ckb_Protocol_Transaction_vec_t, 0)
+
+struct Ckb_Protocol_SetFilter_table { uint8_t unused__; };
+
+static inline size_t Ckb_Protocol_SetFilter_vec_len(Ckb_Protocol_SetFilter_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Ckb_Protocol_SetFilter_table_t Ckb_Protocol_SetFilter_vec_at(Ckb_Protocol_SetFilter_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_SetFilter_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_SetFilter)
+
+__flatbuffers_define_vector_field(0, Ckb_Protocol_SetFilter, filter, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_scalar_field(1, Ckb_Protocol_SetFilter, num_hashes, flatbuffers_uint8, uint8_t, UINT8_C(0))
+__flatbuffers_define_scalar_field(2, Ckb_Protocol_SetFilter, hash_seed, flatbuffers_uint32, uint32_t, UINT32_C(0))
+
+struct Ckb_Protocol_AddFilter_table { uint8_t unused__; };
+
+static inline size_t Ckb_Protocol_AddFilter_vec_len(Ckb_Protocol_AddFilter_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Ckb_Protocol_AddFilter_table_t Ckb_Protocol_AddFilter_vec_at(Ckb_Protocol_AddFilter_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_AddFilter_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_AddFilter)
+
+__flatbuffers_define_vector_field(0, Ckb_Protocol_AddFilter, filter, flatbuffers_uint8_vec_t, 0)
+
+struct Ckb_Protocol_ClearFilter_table { uint8_t unused__; };
+
+static inline size_t Ckb_Protocol_ClearFilter_vec_len(Ckb_Protocol_ClearFilter_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Ckb_Protocol_ClearFilter_table_t Ckb_Protocol_ClearFilter_vec_at(Ckb_Protocol_ClearFilter_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_ClearFilter_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_ClearFilter)
+
+
+struct Ckb_Protocol_FilteredBlock_table { uint8_t unused__; };
+
+static inline size_t Ckb_Protocol_FilteredBlock_vec_len(Ckb_Protocol_FilteredBlock_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Ckb_Protocol_FilteredBlock_table_t Ckb_Protocol_FilteredBlock_vec_at(Ckb_Protocol_FilteredBlock_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_FilteredBlock_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_FilteredBlock)
+
+__flatbuffers_define_table_field(0, Ckb_Protocol_FilteredBlock, header, Ckb_Protocol_Header_table_t, 0)
+__flatbuffers_define_vector_field(1, Ckb_Protocol_FilteredBlock, transactions, Ckb_Protocol_IndexTransaction_vec_t, 0)
+__flatbuffers_define_vector_field(2, Ckb_Protocol_FilteredBlock, hashes, Ckb_Protocol_H256_vec_t, 0)
 
 #include "flatcc/flatcc_epilogue.h"
 #endif /* PROTOCOL_READER_H */
