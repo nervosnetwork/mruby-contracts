@@ -31,23 +31,23 @@ __internal_syscall(long n, long _a0, long _a1, long _a2, long _a3, long _a4, lon
 #define syscall(n, a, b, c, d, e, f) \
         __internal_syscall(n, (long)(a), (long)(b), (long)(c), (long)(d), (long)(e), (long)(f))
 
-int ckb_load_tx(void* addr, uint64_t* len, size_t offset)
+int ckb_load_tx(void* addr, volatile uint64_t* len, size_t offset)
 {
   return syscall(SYS_ckb_load_tx, addr, len, offset, 0, 0, 0);
 }
 
-int ckb_load_cell(void* addr, uint64_t* len, size_t offset, size_t index, size_t source)
+int ckb_load_cell(void* addr, volatile uint64_t* len, size_t offset, size_t index, size_t source)
 {
   return syscall(SYS_ckb_load_cell, addr, len, offset, index, source, 0);
 }
 
-int ckb_load_cell_by_field(void* addr, uint64_t* len, size_t offset,
+int ckb_load_cell_by_field(void* addr, volatile uint64_t* len, size_t offset,
                            size_t index, size_t source, size_t field)
 {
   return syscall(SYS_ckb_load_cell_by_field, addr, len, offset, index, source, field);
 }
 
-int ckb_load_input_by_field(void* addr, uint64_t* len, size_t offset,
+int ckb_load_input_by_field(void* addr, volatile uint64_t* len, size_t offset,
                             size_t index, size_t source, size_t field)
 {
   return syscall(SYS_ckb_load_input_by_field, addr, len, offset, index, source, field);
