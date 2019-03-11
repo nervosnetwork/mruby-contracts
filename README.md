@@ -8,7 +8,7 @@ CKB mruby contract is a port of [mruby](https://github.com/mruby/mruby) on CKB V
 
 * `mruby-ckb`: provides access to CKB environment, such as loading transaction, script hash, cell data as well as debugging support.
 * `mruby-secp256k1`: provides secp256k1 binding in Ruby environment
-* `mruby-sha3`: provides a basic SHA3 binding in Ruby environment
+* `mruby-blake2b`: provides a basic Blake2b binding in Ruby environment
 
 ## How to build dependencies
 
