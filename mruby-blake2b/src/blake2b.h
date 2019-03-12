@@ -252,7 +252,7 @@ int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
   return 0;
 }
 
-
+// hard-code personalization to "ckb-default-hash"
 const char *DEFAULT_PERSONAL = "ckb-default-hash";
 int blake2b_init( blake2b_state *S, size_t outlen )
 {
