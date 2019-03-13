@@ -15,11 +15,9 @@ static mrb_value
 mrb_blake2b_init(mrb_state *mrb, mrb_value self)
 {
   mrb_int outlen = 32;
-  // size_t outlen = 32;
   blake2b_state *s;
 
   mrb_get_args(mrb, "|i", &outlen);
-  // mrb_get_args(mrb, "s", &outlen);
 
   s = (blake2b_state *) mrb_malloc(mrb, sizeof(blake2b_state));
   blake2b_init(s, outlen);
