@@ -18,7 +18,7 @@ build/argv_source_entry: c/argv_source_entry.c $(MRUBY_LIB) $(NEWLIB_LIB) $(SECP
 	NEWLIB=build/newlib/$(TARGET) $(CC) -specs newlib-gcc.specs $(CFLAGS) $(LDFLAGS) -Imruby/include $^ -o $@
 
 $(FLATCC):
-	cd flatcc && scripts/build.sh
+	cd flatcc && scripts/initbuild.sh make && scripts/build.sh
 
 update_schema: $(FLATCC) mruby-ckb/src/protocol.fbs
 	$(FLATCC) -c --reader -o mruby-ckb/src mruby-ckb/src/protocol.fbs
@@ -56,4 +56,6 @@ clean-secp256k1:
 
 clean: clean-newlib clean-mruby clean-secp256k1
 
-.PHONY: update_schema clean clean-newlib clean-mruby clean-secp256k1 newlib mruby secp256k1
+dist: clean all
+
+.PHONY: update_schema clean clean-newlib clean-mruby clean-secp256k1 newlib mruby secp256k1 dist
