@@ -103,25 +103,11 @@ script_to_value(ns(Script_table_t) script, mrb_state *mrb)
   }
   mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "args"), margs);
 
-  ns(Bytes_table_t) binary = ns(Script_binary(script));
-  if (binary) {
-    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "binary"),
-                 bytes_to_string(binary, mrb));
-  }
-
   ns(H256_struct_t) reference = ns(Script_reference(script));
   if (reference) {
     mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "reference"),
                  h256_to_string(reference, mrb));
   }
-
-  ns(Bytes_vec_t) signed_args = ns(Script_signed_args(script));
-  size_t signed_args_len = ns(Bytes_vec_len(signed_args));
-  mrb_value msigned_args = mrb_ary_new_capa(mrb, signed_args_len);
-  for (int i = 0; i < signed_args_len; i++) {
-    mrb_ary_push(mrb, msigned_args, bytes_to_string(ns(Bytes_vec_at(signed_args, i)), mrb));
-  }
-  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "signed_args"), msigned_args);
 
   return v;
 }
@@ -184,8 +170,6 @@ ckb_mrb_load_tx(mrb_state *mrb, mrb_value obj)
     mrb_value moutput = mrb_hash_new(mrb);
     mrb_hash_set(mrb, moutput, mrb_str_new_lit(mrb, "capacity"),
                  mrb_fixnum_value(ns(CellOutput_capacity(output))));
-    mrb_hash_set(mrb, moutput, mrb_str_new_lit(mrb, "lock"),
-                 h256_to_string(ns(CellOutput_lock(output)), mrb));
 
     mrb_ary_push(mrb, moutputs, moutput);
   }
@@ -223,18 +207,18 @@ ckb_mrb_load_script_hash(mrb_state *mrb, mrb_value obj)
 }
 
 static mrb_value
-ckb_mrb_load_output_type_script(mrb_state *mrb, mrb_value obj)
+ckb_mrb_load_script(mrb_state *mrb, mrb_value obj)
 {
-  mrb_int index;
+  mrb_int index, source, category;
   uint64_t len;
   mrb_value v;
   int ret;
   void *addr = NULL;
 
-  mrb_get_args(mrb, "i", &index);
+  mrb_get_args(mrb, "iii", &index, &source, &category);
 
   len = 0;
-  ret = ckb_load_cell_by_field(NULL, &len, 0, index, CKB_SOURCE_OUTPUT, CKB_CELL_FIELD_TYPE);
+  ret = ckb_load_cell_by_field(NULL, &len, 0, index, source, category);
   if (ret == CKB_ITEM_MISSING) {
     return mrb_nil_value();
   }
@@ -264,7 +248,7 @@ ckb_mrb_load_output_type_script(mrb_state *mrb, mrb_value obj)
 }
 
 static mrb_value
-ckb_mrb_load_input_unlock_script(mrb_state *mrb, mrb_value obj)
+ckb_mrb_load_input_unlock_args(mrb_state *mrb, mrb_value obj)
 {
   mrb_int index;
   uint64_t len;
@@ -275,7 +259,7 @@ ckb_mrb_load_input_unlock_script(mrb_state *mrb, mrb_value obj)
   mrb_get_args(mrb, "i", &index);
 
   len = 0;
-  ret = ckb_load_input_by_field(NULL, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_UNLOCK);
+  ret = ckb_load_input_by_field(NULL, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_ARGS);
   if (ret == CKB_ITEM_MISSING) {
     return mrb_nil_value();
   }
@@ -288,18 +272,24 @@ ckb_mrb_load_input_unlock_script(mrb_state *mrb, mrb_value obj)
     mrb_raise(mrb, E_ARGUMENT_ERROR, "not enough memory!");
   }
 
-  ret = ckb_load_input_by_field(addr, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_UNLOCK);
+  ret = ckb_load_input_by_field(addr, &len, 0, index, CKB_SOURCE_INPUT, CKB_INPUT_FIELD_ARGS);
   if (ret != CKB_SUCCESS) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong load cell by field return value!");
   }
 
-  ns(Script_table_t) script;
-  if (!(script = ns(Script_as_root(addr)))) {
+  ns(CellInput_table_t) input;
+  if (!(input = ns(CellInput_as_root(addr)))) {
     free(addr);
     mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing script!");
   }
 
-  v = script_to_value(script, mrb);
+  ns(Bytes_vec_t) args = ns(CellInput_args(input));
+  size_t args_len = ns(Bytes_vec_len(args));
+  v = mrb_ary_new_capa(mrb, args_len);
+  for (int i = 0; i < args_len; i++) {
+    mrb_ary_push(mrb, v, bytes_to_string(ns(Bytes_vec_at(args, i)), mrb));
+  }
+
   free(addr);
   return v;
 }
@@ -453,8 +443,8 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
-  mrb_define_module_function(mrb, mrb_ckb, "load_output_type_script", ckb_mrb_load_output_type_script, MRB_ARGS_REQ(1));
-  mrb_define_module_function(mrb, mrb_ckb, "load_input_unlock_script", ckb_mrb_load_input_unlock_script, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "load_script", ckb_mrb_load_script, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "load_input_unlock_args", ckb_mrb_load_input_unlock_args, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_ckb, "load_input_out_point", ckb_mrb_load_input_out_point, MRB_ARGS_REQ(2));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
   reader = mrb_define_class_under(mrb, mrb_ckb, "Reader", mrb->object_class);

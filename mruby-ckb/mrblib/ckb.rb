@@ -38,6 +38,7 @@ module CKB
     LOCK_HASH = 3
     TYPE = 4
     TYPE_HASH = 5
+    LOCK = 6
 
     def initialize(source, index, cell_field)
       @source = source
@@ -47,7 +48,7 @@ module CKB
   end
 
   class InputField < Reader
-    UNLOCK = 0
+    ARGS = 0
     OUT_POINT = 1
 
     def initialize(source, index, input_field)
@@ -57,7 +58,7 @@ module CKB
     end
   end
 
-  module Category
+  module HashType
     LOCK = CellField::LOCK_HASH
     TYPE = CellField::TYPE_HASH
   end
