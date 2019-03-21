@@ -376,7 +376,7 @@ ckb_mrb_cell_internal_read(mrb_state *mrb, mrb_value self)
     if (ckb_load_cell(RSTRING_PTR(buf), &buf_len, offset, index, source) != CKB_SUCCESS) {
       return mrb_nil_value();
     }
-    RSTR_SET_LEN(mrb_str_ptr(buf), buf_len);
+    RSTR_SET_LEN(mrb_str_ptr(buf), len);
 
     return buf;
   }
@@ -408,7 +408,7 @@ ckb_mrb_cell_field_internal_read(mrb_state *mrb, mrb_value self)
     if (ckb_load_cell_by_field(RSTRING_PTR(buf), &buf_len, offset, index, source, field) != CKB_SUCCESS) {
       return mrb_nil_value();
     }
-    RSTR_SET_LEN(mrb_str_ptr(buf), buf_len);
+    RSTR_SET_LEN(mrb_str_ptr(buf), len);
 
     return buf;
   }
@@ -434,7 +434,7 @@ ckb_mrb_input_field_internal_read(mrb_state *mrb, mrb_value self)
       buf_len = 0;
     }
 
-    return mrb_fixnum_value(buf_len);
+    return mrb_fixnum_value(len);
   } else {
     buf = mrb_str_new_capa(mrb, buf_len);
     if (ckb_load_input_by_field(RSTRING_PTR(buf), &buf_len, offset, index, source, field) != CKB_SUCCESS) {
