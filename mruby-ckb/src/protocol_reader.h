@@ -77,6 +77,9 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_CompactBlock_mutable_vec_t;
 typedef const struct Ckb_Protocol_IndexTransaction_table *Ckb_Protocol_IndexTransaction_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_IndexTransaction_vec_t;
 typedef flatbuffers_uoffset_t *Ckb_Protocol_IndexTransaction_mutable_vec_t;
+typedef const struct Ckb_Protocol_ValidTransaction_table *Ckb_Protocol_ValidTransaction_table_t;
+typedef const flatbuffers_uoffset_t *Ckb_Protocol_ValidTransaction_vec_t;
+typedef flatbuffers_uoffset_t *Ckb_Protocol_ValidTransaction_mutable_vec_t;
 typedef const struct Ckb_Protocol_GetBlockTransactions_table *Ckb_Protocol_GetBlockTransactions_table_t;
 typedef const flatbuffers_uoffset_t *Ckb_Protocol_GetBlockTransactions_vec_t;
 typedef flatbuffers_uoffset_t *Ckb_Protocol_GetBlockTransactions_mutable_vec_t;
@@ -190,6 +193,11 @@ typedef flatbuffers_uoffset_t *Ckb_Protocol_Time_mutable_vec_t;
 #endif
 #define Ckb_Protocol_IndexTransaction_type_hash ((flatbuffers_thash_t)0x74d36d43)
 #define Ckb_Protocol_IndexTransaction_type_identifier "\x43\x6d\xd3\x74"
+#ifndef Ckb_Protocol_ValidTransaction_identifier
+#define Ckb_Protocol_ValidTransaction_identifier flatbuffers_identifier
+#endif
+#define Ckb_Protocol_ValidTransaction_type_hash ((flatbuffers_thash_t)0x4377250d)
+#define Ckb_Protocol_ValidTransaction_type_identifier "\x0d\x25\x77\x43"
 #ifndef Ckb_Protocol_GetBlockTransactions_identifier
 #define Ckb_Protocol_GetBlockTransactions_identifier flatbuffers_identifier
 #endif
@@ -573,13 +581,13 @@ __flatbuffers_table_as_root(Ckb_Protocol_Script)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_Script, version, flatbuffers_uint8, uint8_t, UINT8_C(0))
 __flatbuffers_define_vector_field(1, Ckb_Protocol_Script, args, Ckb_Protocol_Bytes_vec_t, 0)
-__flatbuffers_define_struct_field(2, Ckb_Protocol_Script, reference, Ckb_Protocol_H256_struct_t, 0)
+__flatbuffers_define_struct_field(2, Ckb_Protocol_Script, binary_hash, Ckb_Protocol_H256_struct_t, 0)
 typedef uint8_t Ckb_Protocol_RelayPayload_union_type_t;
 __flatbuffers_define_integer_type(Ckb_Protocol_RelayPayload, Ckb_Protocol_RelayPayload_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, Ckb_Protocol_RelayPayload)
 #define Ckb_Protocol_RelayPayload_NONE ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(0))
 #define Ckb_Protocol_RelayPayload_CompactBlock ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(1))
-#define Ckb_Protocol_RelayPayload_Transaction ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(2))
+#define Ckb_Protocol_RelayPayload_ValidTransaction ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(2))
 #define Ckb_Protocol_RelayPayload_GetBlockTransactions ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(3))
 #define Ckb_Protocol_RelayPayload_BlockTransactions ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(4))
 #define Ckb_Protocol_RelayPayload_GetBlockProposal ((Ckb_Protocol_RelayPayload_union_type_t)UINT8_C(5))
@@ -590,7 +598,7 @@ static inline const char *Ckb_Protocol_RelayPayload_type_name(Ckb_Protocol_Relay
     switch (type) {
     case Ckb_Protocol_RelayPayload_NONE: return "NONE";
     case Ckb_Protocol_RelayPayload_CompactBlock: return "CompactBlock";
-    case Ckb_Protocol_RelayPayload_Transaction: return "Transaction";
+    case Ckb_Protocol_RelayPayload_ValidTransaction: return "ValidTransaction";
     case Ckb_Protocol_RelayPayload_GetBlockTransactions: return "GetBlockTransactions";
     case Ckb_Protocol_RelayPayload_BlockTransactions: return "BlockTransactions";
     case Ckb_Protocol_RelayPayload_GetBlockProposal: return "GetBlockProposal";
@@ -604,7 +612,7 @@ static inline int Ckb_Protocol_RelayPayload_is_known_type(Ckb_Protocol_RelayPayl
     switch (type) {
     case Ckb_Protocol_RelayPayload_NONE: return 1;
     case Ckb_Protocol_RelayPayload_CompactBlock: return 1;
-    case Ckb_Protocol_RelayPayload_Transaction: return 1;
+    case Ckb_Protocol_RelayPayload_ValidTransaction: return 1;
     case Ckb_Protocol_RelayPayload_GetBlockTransactions: return 1;
     case Ckb_Protocol_RelayPayload_BlockTransactions: return 1;
     case Ckb_Protocol_RelayPayload_GetBlockProposal: return 1;
@@ -649,6 +657,17 @@ __flatbuffers_table_as_root(Ckb_Protocol_IndexTransaction)
 
 __flatbuffers_define_scalar_field(0, Ckb_Protocol_IndexTransaction, index, flatbuffers_uint32, uint32_t, UINT32_C(0))
 __flatbuffers_define_table_field(1, Ckb_Protocol_IndexTransaction, transaction, Ckb_Protocol_Transaction_table_t, 0)
+
+struct Ckb_Protocol_ValidTransaction_table { uint8_t unused__; };
+
+static inline size_t Ckb_Protocol_ValidTransaction_vec_len(Ckb_Protocol_ValidTransaction_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Ckb_Protocol_ValidTransaction_table_t Ckb_Protocol_ValidTransaction_vec_at(Ckb_Protocol_ValidTransaction_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Ckb_Protocol_ValidTransaction_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Ckb_Protocol_ValidTransaction)
+
+__flatbuffers_define_scalar_field(0, Ckb_Protocol_ValidTransaction, cycles, flatbuffers_uint64, uint64_t, UINT64_C(0))
+__flatbuffers_define_table_field(1, Ckb_Protocol_ValidTransaction, transaction, Ckb_Protocol_Transaction_table_t, 0)
 
 struct Ckb_Protocol_GetBlockTransactions_table { uint8_t unused__; };
 

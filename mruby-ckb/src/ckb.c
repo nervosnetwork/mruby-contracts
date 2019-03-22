@@ -103,10 +103,10 @@ script_to_value(ns(Script_table_t) script, mrb_state *mrb)
   }
   mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "args"), margs);
 
-  ns(H256_struct_t) reference = ns(Script_reference(script));
-  if (reference) {
-    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "reference"),
-                 h256_to_string(reference, mrb));
+  ns(H256_struct_t) binary_hash = ns(Script_binary_hash(script));
+  if (binary_hash) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "binary_hash"),
+                 h256_to_string(binary_hash, mrb));
   }
 
   return v;
