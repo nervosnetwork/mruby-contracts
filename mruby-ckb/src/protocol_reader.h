@@ -533,7 +533,6 @@ __flatbuffers_define_scalar_field(0, Ckb_Protocol_Transaction, version, flatbuff
 __flatbuffers_define_vector_field(1, Ckb_Protocol_Transaction, deps, Ckb_Protocol_OutPoint_vec_t, 0)
 __flatbuffers_define_vector_field(2, Ckb_Protocol_Transaction, inputs, Ckb_Protocol_CellInput_vec_t, 0)
 __flatbuffers_define_vector_field(3, Ckb_Protocol_Transaction, outputs, Ckb_Protocol_CellOutput_vec_t, 0)
-__flatbuffers_define_vector_field(4, Ckb_Protocol_Transaction, embeds, Ckb_Protocol_Bytes_vec_t, 0)
 
 struct Ckb_Protocol_OutPoint_table { uint8_t unused__; };
 
