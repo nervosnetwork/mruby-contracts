@@ -443,7 +443,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_ckb = mrb_define_module(mrb, "CKB");
   mrb_define_module_function(mrb, mrb_ckb, "load_tx", ckb_mrb_load_tx, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_REQ(3));
-  mrb_define_module_function(mrb, mrb_ckb, "load_script", ckb_mrb_load_script, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "load_script", ckb_mrb_load_script, MRB_ARGS_REQ(3));
   mrb_define_module_function(mrb, mrb_ckb, "load_input_unlock_args", ckb_mrb_load_input_unlock_args, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_ckb, "load_input_out_point", ckb_mrb_load_input_out_point, MRB_ARGS_REQ(2));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
