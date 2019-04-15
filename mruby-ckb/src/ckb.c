@@ -2,6 +2,7 @@
 #include "mruby/array.h"
 #include "mruby/hash.h"
 #include "mruby/string.h"
+#include "mruby/compile.h"
 #include "mruby/variable.h"
 
 #include "ckb_consts.h"
@@ -405,6 +406,29 @@ ckb_mrb_cell_field_internal_read(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+ckb_mrb_exec_cell(mrb_state *mrb, mrb_value self)
+{
+    mrb_int index;
+    mrb_get_args(mrb, "i", &index);
+
+    // load cell data from responding dependency cell
+    uint64_t len = 0;
+    if (ckb_load_cell_by_field(NULL, &len, 0, index, CKB_SOURCE_DEP, CKB_CELL_FIELD_DATA) != CKB_SUCCESS) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "missing dependency cell!");
+    }
+
+    mrb_value buf = mrb_str_new_capa(mrb, len);
+    if (ckb_load_cell_by_field(RSTRING_PTR(buf), &len, 0, index, CKB_SOURCE_DEP, CKB_CELL_FIELD_DATA) != CKB_SUCCESS) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "loading dependency cell error!");
+    }
+
+    RSTR_SET_LEN(mrb_str_ptr(buf), len);
+    char* code = mrb_str_to_cstr(mrb, buf);
+
+    return mrb_load_string(mrb, code);
+}
+
+static mrb_value
 ckb_mrb_input_field_internal_read(mrb_state *mrb, mrb_value self)
 {
   mrb_int source, index, len, offset, field;
@@ -447,6 +471,7 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
   mrb_define_module_function(mrb, mrb_ckb, "load_input_unlock_args", ckb_mrb_load_input_unlock_args, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_ckb, "load_input_out_point", ckb_mrb_load_input_out_point, MRB_ARGS_REQ(2));
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "exec_cell", ckb_mrb_exec_cell, MRB_ARGS_REQ(1));
   reader = mrb_define_class_under(mrb, mrb_ckb, "Reader", mrb->object_class);
   cell = mrb_define_class_under(mrb, mrb_ckb, "Cell", reader);
   mrb_define_method(mrb, cell, "internal_read", ckb_mrb_cell_internal_read, MRB_ARGS_REQ(1));
