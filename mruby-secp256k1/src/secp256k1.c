@@ -85,7 +85,7 @@ secp256k1_mrb_sign(mrb_state *mrb, mrb_value obj)
   size_t len = 256;
   ret = secp256k1_ecdsa_signature_serialize_der(&context, buf, &len, &signature);
   if (ret == 0) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 signature serializing failure!");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 signature_der serializing failure!");
   }
 
   return mrb_str_new(mrb, buf, len);
@@ -123,7 +123,7 @@ secp256k1_mrb_verify(mrb_state *mrb, mrb_value obj)
   ret = secp256k1_ecdsa_signature_parse_der(&context, &signature, signature_buf,
                                             signature_len);
   if (ret == 0) {
-    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 signature parsing failure!");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "secp256k1 signature_der parsing failure!");
   }
 
   ret = secp256k1_ecdsa_verify(&context, &signature, message_buf, &pubkey);
