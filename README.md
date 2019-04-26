@@ -47,6 +47,11 @@ $ git submodule update --init --recursive --progress
 Since we need to build gcc without floating point number support, you need a separate build config from the stock ones. You can create a file named `build-rv64imac.sh` in `riscv-tools` repo's root folder with the following content:
 
 ```
+#! /bin/bash
+#
+# Script to build RISC-V ISA simulator, proxy kernel, and GNU toolchain.
+# Tools will be installed to $RISCV.
+
 . build.common
 
 echo "Starting RISC-V Toolchain build process"
