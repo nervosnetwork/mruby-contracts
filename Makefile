@@ -44,6 +44,10 @@ mruby: $(MRUBY_LIB)
 newlib: $(NEWLIB_LIB)
 secp256k1: $(SECP256K1_LIB)
 
+rebuild-mruby:
+	cd mruby && \
+		NEWLIB=../build/newlib/$(TARGET) MRUBY_CONFIG=../build_config.rb make
+
 clean-newlib:
 	rm -rf build/newlib build/build-newlib
 
@@ -58,4 +62,4 @@ clean: clean-newlib clean-mruby clean-secp256k1
 
 dist: clean all
 
-.PHONY: update_schema clean clean-newlib clean-mruby clean-secp256k1 newlib mruby secp256k1 dist
+.PHONY: update_schema clean clean-newlib clean-mruby clean-secp256k1 newlib mruby secp256k1 dist rebuild-mruby
