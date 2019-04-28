@@ -10,3 +10,6 @@
 [submodule "secp256k1"]
 	path = secp256k1
 	url = https://github.com/nervosnetwork/secp256k1
+[submodule "tiny-bignum-c"]
+	path = tiny-bignum-c
+	url = https://github.com/kokke/tiny-bignum-c
