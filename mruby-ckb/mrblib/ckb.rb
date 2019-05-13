@@ -1,6 +1,8 @@
 module CKB
+  class IndexOutOfBound < ::StandardError
+  end
+
   module Source
-    CURRENT = 0
     INPUT = 1
     OUTPUT = 2
     DEP = 3
@@ -8,7 +10,7 @@ module CKB
 
   class Reader
     def exists?
-      internal_read(1, 0) != nil
+      !!length
     end
 
     def length
@@ -20,7 +22,10 @@ module CKB
     end
 
     def readall
-      read(0, length)
+      # This way we can save one extra syscall
+      l = length
+      return nil unless l
+      read(0, l)
     end
   end
 
@@ -35,10 +40,10 @@ module CKB
     CAPACITY = 0
     DATA = 1
     DATA_HASH = 2
-    LOCK_HASH = 3
-    TYPE = 4
-    TYPE_HASH = 5
-    LOCK = 6
+    LOCK = 3
+    LOCK_HASH = 4
+    TYPE = 5
+    TYPE_HASH = 6
 
     def initialize(source, index, cell_field)
       @source = source
@@ -50,6 +55,7 @@ module CKB
   class InputField < Reader
     ARGS = 0
     OUT_POINT = 1
+    SINCE = 2
 
     def initialize(source, index, input_field)
       @source = source
@@ -59,7 +65,7 @@ module CKB
   end
 
   module HashType
-    LOCK = CellField::LOCK_HASH
-    TYPE = CellField::TYPE_HASH
+    LOCK_HASH = CellField::LOCK_HASH
+    TYPE_HASH = CellField::TYPE_HASH
   end
 end

@@ -18,9 +18,29 @@
 #error "stdio must be available to fake syscalls!"
 #endif
 
-int ckb_load_tx(void* addr, uint64_t* len, size_t offset)
+int ckb_load_tx_hash(void* addr, uint64_t* len, size_t offset)
 {
-  FILE *fp = fopen("data/tx", "rb");
+  FILE *fp = fopen("data/tx_hash", "rb");
+  if (fp == NULL) {
+    return CKB_ITEM_MISSING;
+  }
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  size_t left_size = size - offset;
+  size_t read_size = MIN(left_size, *len);
+
+  fseek(fp, offset, SEEK_SET);
+  fread(addr, 1, read_size, fp);
+  *len = left_size;
+
+  return CKB_SUCCESS;
+}
+
+int ckb_load_script_hash(void* addr, uint64_t* len, size_t offset)
+{
+  FILE *fp = fopen("data/script_hash", "rb");
   if (fp == NULL) {
     return CKB_ITEM_MISSING;
   }
@@ -45,11 +65,69 @@ int ckb_load_cell(void* addr, uint64_t* len, size_t offset, size_t index, size_t
 
   FILE *fp = fopen(internal_buffer, "rb");
   if (fp == NULL) {
-    return CKB_ITEM_MISSING;
+    return CKB_INDEX_OUT_OF_BOUND;
   }
   fseek(fp, 0, SEEK_END);
   size_t size = ftell(fp);
   fseek(fp, 0, SEEK_SET);
+
+  if (size == 0) {
+    return CKB_ITEM_MISSING;
+  }
+
+  size_t left_size = size - offset;
+  size_t read_size = MIN(left_size, *len);
+
+  fseek(fp, offset, SEEK_SET);
+  fread(addr, 1, read_size, fp);
+  *len = left_size;
+
+  return CKB_SUCCESS;
+}
+
+int ckb_load_input(void* addr, uint64_t* len, size_t offset, size_t index, size_t source)
+{
+  char internal_buffer[MAX_FILENAME_LENGTH];
+  snprintf(internal_buffer, MAX_FILENAME_LENGTH, "data/inputs/%ld/%ld", index, source);
+
+  FILE *fp = fopen(internal_buffer, "rb");
+  if (fp == NULL) {
+    return CKB_INDEX_OUT_OF_BOUND;
+  }
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  if (size == 0) {
+    return CKB_ITEM_MISSING;
+  }
+
+  size_t left_size = size - offset;
+  size_t read_size = MIN(left_size, *len);
+
+  fseek(fp, offset, SEEK_SET);
+  fread(addr, 1, read_size, fp);
+  *len = left_size;
+
+  return CKB_SUCCESS;
+}
+
+int ckb_load_header(void* addr, uint64_t* len, size_t offset, size_t index, size_t source)
+{
+  char internal_buffer[MAX_FILENAME_LENGTH];
+  snprintf(internal_buffer, MAX_FILENAME_LENGTH, "data/headers/%ld/%ld", index, source);
+
+  FILE *fp = fopen(internal_buffer, "rb");
+  if (fp == NULL) {
+    return CKB_INDEX_OUT_OF_BOUND;
+  }
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  if (size == 0) {
+    return CKB_ITEM_MISSING;
+  }
 
   size_t left_size = size - offset;
   size_t read_size = MIN(left_size, *len);
@@ -68,11 +146,15 @@ int ckb_load_cell_by_field(void* addr, uint64_t* len, size_t offset, size_t inde
 
   FILE *fp = fopen(internal_buffer, "rb");
   if (fp == NULL) {
-    return CKB_ITEM_MISSING;
+    return CKB_INDEX_OUT_OF_BOUND;
   }
   fseek(fp, 0, SEEK_END);
   size_t size = ftell(fp);
   fseek(fp, 0, SEEK_SET);
+
+  if (size == 0) {
+    return CKB_ITEM_MISSING;
+  }
 
   size_t left_size = size - offset;
   size_t read_size = MIN(left_size, *len);
@@ -91,11 +173,15 @@ int ckb_load_input_by_field(void* addr, uint64_t* len, size_t offset, size_t ind
 
   FILE *fp = fopen(internal_buffer, "rb");
   if (fp == NULL) {
-    return CKB_ITEM_MISSING;
+    return CKB_INDEX_OUT_OF_BOUND;
   }
   fseek(fp, 0, SEEK_END);
   size_t size = ftell(fp);
   fseek(fp, 0, SEEK_SET);
+
+  if (size == 0) {
+    return CKB_ITEM_MISSING;
+  }
 
   size_t left_size = size - offset;
   size_t read_size = MIN(left_size, *len);
