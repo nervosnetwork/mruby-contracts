@@ -120,16 +120,36 @@ outpoint_to_value(ns(OutPoint_table_t) outpoint, mrb_state *mrb)
   return v;
 }
 
-static mrb_value
-script_to_value(ns(Script_table_t) script, mrb_state *mrb)
+static void
+raise_index_out_of_bound(mrb_state *mrb)
 {
-  ns(H256_struct_t) code_hash;
-  mrb_value v = mrb_hash_new(mrb);
+  struct RClass *mrb_ckb = mrb_module_get(mrb, "CKB");
+  struct RClass *error_class = mrb_class_get_under(mrb, mrb_ckb, "IndexOutOfBound");
+  mrb_raise(mrb, error_class, "Index out of bound!");
+}
 
-  ns(Bytes_vec_t) args = ns(Script_args(script));
-  size_t args_len = ns(Bytes_vec_len(args));
-  mrb_value margs = mrb_ary_new_capa(mrb, args_len);
-  for (int i = 0; i < args_len; i++) {
+static mrb_value
+ckb_mrb_parse_script(mrb_state *mrb, mrb_value self)
+{
+  mrb_value s, v, margs;
+  ns(Bytes_vec_t) args;
+  ns(Script_table_t) script;
+  ns(H256_struct_t) code_hash;
+  size_t args_len;
+  int i;
+
+  mrb_get_args(mrb, "S", &s);
+
+  script = ns(Script_as_root(RSTRING_PTR(s)));
+  if (!script) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing script data!");
+  }
+
+  v = mrb_hash_new(mrb);
+  args = ns(Script_args(script));
+  args_len = ns(Bytes_vec_len(args));
+  margs = mrb_ary_new_capa(mrb, args_len);
+  for (i = 0; i < args_len; i++) {
     mrb_ary_push(mrb, margs, bytes_to_string(ns(Bytes_vec_at(args, i)), mrb));
   }
   mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "args"), margs);
@@ -143,12 +163,93 @@ script_to_value(ns(Script_table_t) script, mrb_state *mrb)
   return v;
 }
 
-static void
-raise_index_out_of_bound(mrb_state *mrb)
+static mrb_value
+ckb_mrb_parse_header(mrb_state *mrb, mrb_value self)
 {
-  struct RClass *mrb_ckb = mrb_module_get(mrb, "CKB");
-  struct RClass *error_class = mrb_class_get_under(mrb, mrb_ckb, "IndexOutOfBound");
-  mrb_raise(mrb, error_class, "Index out of bound!");
+  mrb_value s, v;
+  ns(Header_table_t) header;
+  ns(Bytes_table_t) bytes;
+  ns(H256_struct_t) hash;
+  size_t args_len;
+  int i;
+
+  mrb_get_args(mrb, "S", &s);
+
+  header = ns(Header_as_root(RSTRING_PTR(s)));
+  if (!header) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing header data!");
+  }
+
+  v = mrb_hash_new(mrb);
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "version"), mrb_fixnum_value(ns(Header_version(header))));
+  if ((hash = ns(Header_parent_hash(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "parent_hash"), h256_to_string(hash, mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "timestamp"), mrb_fixnum_value(ns(Header_timestamp(header))));
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "number"), mrb_fixnum_value(ns(Header_number(header))));
+  if ((hash = ns(Header_transactions_root(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "transactions_root"), h256_to_string(hash, mrb));
+  }
+  if ((hash = ns(Header_witnesses_root(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "witnesses_root"), h256_to_string(hash, mrb));
+  }
+  if ((hash = ns(Header_proposals_hash(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "proposals_hash"), h256_to_string(hash, mrb));
+  }
+  if ((bytes = ns(Header_difficulty(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "difficulty"), bytes_to_string(bytes, mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "nonce"), mrb_fixnum_value(ns(Header_nonce(header))));
+  if ((bytes = ns(Header_proof(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "proof"), bytes_to_string(bytes, mrb));
+  }
+  if ((hash = ns(Header_uncles_hash(header))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "uncles_hash"), h256_to_string(hash, mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "uncles_count"), mrb_fixnum_value(ns(Header_uncles_count(header))));
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "epoch"), mrb_fixnum_value(ns(Header_epoch(header))));
+
+  return v;
+}
+
+static mrb_value
+ckb_mrb_parse_input(mrb_state *mrb, mrb_value self)
+{
+  mrb_value s, v, t;
+  ns(Bytes_vec_t) args;
+  ns(CellInput_table_t) input;
+  ns(H256_struct_t) hash;
+  size_t args_len;
+  int i;
+
+  mrb_get_args(mrb, "S", &s);
+
+  input = ns(CellInput_as_root(RSTRING_PTR(s)));
+  if (!input) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "error parsing input data!");
+  }
+
+  v = mrb_hash_new(mrb);
+  args = ns(CellInput_args(input));
+  args_len = ns(Bytes_vec_len(args));
+  t = mrb_ary_new_capa(mrb, args_len);
+  for (i = 0; i < args_len; i++) {
+    mrb_ary_push(mrb, t, bytes_to_string(ns(Bytes_vec_at(args, i)), mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "args"), t);
+
+  if ((hash = ns(CellInput_tx_hash(input))) != NULL) {
+    mrb_value t = mrb_hash_new(mrb);
+    mrb_hash_set(mrb, t, mrb_str_new_lit(mrb, "hash"), h256_to_string(hash, mrb));
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "index"), mrb_fixnum_value(ns(CellInput_index(input))));
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "cell"), t);
+  }
+  if ((hash = ns(CellInput_block_hash(input))) != NULL) {
+    mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "block_hash"), h256_to_string(hash, mrb));
+  }
+  mrb_hash_set(mrb, v, mrb_str_new_lit(mrb, "since"), mrb_fixnum_value(ns(CellInput_since(input))));
+
+  return v;
 }
 
 static mrb_value
@@ -354,6 +455,9 @@ mrb_mruby_ckb_gem_init(mrb_state* mrb)
 {
   struct RClass *mrb_ckb, *reader, *cell, *input, *header, *cell_field, *input_field;
   mrb_ckb = mrb_define_module(mrb, "CKB");
+  mrb_define_module_function(mrb, mrb_ckb, "parse_header", ckb_mrb_parse_header, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "parse_input", ckb_mrb_parse_input, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mrb_ckb, "parse_script", ckb_mrb_parse_script, MRB_ARGS_REQ(1));
   mrb_define_module_function(mrb, mrb_ckb, "load_tx_hash", ckb_mrb_load_tx_hash, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "load_script_hash", ckb_mrb_load_script_hash, MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_ckb, "debug", ckb_mrb_debug, MRB_ARGS_REQ(1));
